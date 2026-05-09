@@ -530,6 +530,150 @@ def post_id_insights(consolidated: list[dict], account_summary: dict) -> list[di
 
 
 # ──────────────────────────────────────────────────────────
+# Urgent Actions — kill list / scaling list / fix list
+# ──────────────────────────────────────────────────────────
+def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
+                          summary: dict, tracking: dict) -> list[dict]:
+    """
+    Returns ordered list of actions ranked by urgency + $ impact.
+    Each action has: severity, action_type, target, reason, impact, meta_url.
+    """
+    out = []
+    account_cpa = summary.get("cpa") or 0
+
+    # 1. Campañas ACTIVE con 0 conversions y spend significativo → KILL
+    for c in campaigns:
+        if c.get("effective_status") != "ACTIVE":
+            continue
+        if c.get("purchases", 0) == 0 and c.get("spend", 0) > (account_cpa * 1.5):
+            out.append({
+                "severity": "critical",
+                "action": "PAUSAR YA",
+                "type": "campaign",
+                "target_id": c["id"],
+                "target_name": c["name"],
+                "reason": f"Gastó {_fmt_compact(c['spend'])} sin generar 1 sola compra. CTR {c.get('ctr',0):.2f}% (promedio cuenta {summary.get('ctr',0):.2f}%).",
+                "impact": f"Estás quemando ~{_fmt_compact(c['spend'] / 7)} COP/día sin retorno",
+                "meta_url": f"https://business.facebook.com/adsmanager/manage/adsets?act={summary.get('account_id_clean','')}&selected_campaign_ids={c['id']}",
+                "score": c.get("score", 0),
+            })
+
+    # 2. Campañas ACTIVE con CPA >2x del promedio → KILL or fix
+    for c in campaigns:
+        if c.get("effective_status") != "ACTIVE":
+            continue
+        if c.get("purchases", 0) > 0 and c.get("cpa") and account_cpa and c["cpa"] > account_cpa * 2:
+            ratio = c["cpa"] / account_cpa
+            out.append({
+                "severity": "critical",
+                "action": "PAUSAR",
+                "type": "campaign",
+                "target_id": c["id"],
+                "target_name": c["name"],
+                "reason": f"CPA {_fmt_compact(c['cpa'])} es {ratio:.1f}x más caro que el promedio cuenta ({_fmt_compact(account_cpa)}). Solo {c['purchases']} compras.",
+                "impact": f"Cada compra cuesta {_fmt_compact(c['cpa'] - account_cpa)} más de lo normal",
+                "meta_url": "",
+                "score": c.get("score", 0),
+            })
+
+    # 3. Frequency cuenta crítica → CAMBIAR ESTRATEGIA
+    freq = summary.get("frequency", 0)
+    if freq > 4.0:
+        out.append({
+            "severity": "critical",
+            "action": "REFRESCAR CREATIVE",
+            "type": "account",
+            "target_id": "global",
+            "target_name": "Toda la cuenta",
+            "reason": f"Frecuencia {freq:.2f} (target <2.5). Audiencia saturada — el creative está quemado.",
+            "impact": "Si no se rota, CPA seguirá subiendo. Hoy ya están en {:.1f}x exposición/persona.".format(freq),
+            "meta_url": "",
+            "score": 100,
+        })
+
+    # 4. Posts FATIGUED → KILL post bulk
+    for p in post_ids:
+        if p.get("frequency", 0) > 4.0 and p.get("active_count", 0) > 0:
+            out.append({
+                "severity": "critical",
+                "action": "PAUSAR EN BULK",
+                "type": "post_id",
+                "target_id": p["post_id"],
+                "target_name": f"Post …{p['post_id'][-12:]} ({p['ad_count']} ads activos)",
+                "reason": f"Frecuencia consolidada {p['frequency']:.1f} a través de {p['ad_count']} ads. CTR cayendo.",
+                "impact": f"Quemás {_fmt_compact(p['spend'])} en posts saturados",
+                "meta_url": "",
+                "score": 80,
+            })
+
+    # 5. Posts con BUDGET WASTE label
+    for p in post_ids:
+        if p.get("label") == "BUDGET WASTE":
+            out.append({
+                "severity": "critical",
+                "action": "PAUSAR POST",
+                "type": "post_id",
+                "target_id": p["post_id"],
+                "target_name": f"Post …{p['post_id'][-12:]}",
+                "reason": f"Gastó {_fmt_compact(p['spend'])} con 0 compras",
+                "impact": f"Waste directo: {_fmt_compact(p['spend'])}",
+                "meta_url": "",
+                "score": 90,
+            })
+
+    # 6. Tracking gap (importante pero no urgent visual rojo — warning)
+    if not tracking.get("value_tracking", True):
+        out.append({
+            "severity": "warning",
+            "action": "CONFIGURAR PIXEL",
+            "type": "tech",
+            "target_id": "pixel",
+            "target_name": "Shopify Customer Events Pixel",
+            "reason": "El pixel no envía 'value' en eventos Purchase. Sin esto no hay ROAS calculable.",
+            "impact": "Decisiones de optimización están ciegas a profitability. Bloqueante de §8 del prompt.",
+            "meta_url": "",
+            "score": 50,
+        })
+
+    # 7. Funnel leak severe (ATC → Checkout drop > 75%)
+    if summary.get("atc") and summary.get("ic"):
+        atc = summary["atc"]
+        ic = summary["ic"]
+        drop = 1 - (ic / atc) if atc > 0 else 0
+        if drop > 0.75:
+            out.append({
+                "severity": "warning",
+                "action": "AUDITAR CHECKOUT",
+                "type": "tech",
+                "target_id": "shopify",
+                "target_name": "Flow Shopify ATC → Checkout",
+                "reason": f"De {atc} ATC solo {ic} llegan a checkout ({drop*100:.0f}% drop).",
+                "impact": f"Si esto fuera 50%, tendrías {int(atc * 0.5 - ic)} purchases más",
+                "meta_url": "",
+                "score": 70,
+            })
+
+    # Sort: critical first, then by score
+    out.sort(key=lambda x: (0 if x["severity"] == "critical" else 1, -x["score"]))
+    return out
+
+
+def _fmt_compact(v) -> str:
+    """Quick format for analyzer messages."""
+    if v is None:
+        return "—"
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return str(v)
+    if abs(v) >= 1_000_000:
+        return f"{v/1_000_000:.2f}M"
+    if abs(v) >= 1_000:
+        return f"{v/1_000:.0f}K"
+    return f"{v:,.0f}"
+
+
+# ──────────────────────────────────────────────────────────
 # Audience Intelligence — process demographic breakdowns
 # ──────────────────────────────────────────────────────────
 def _row_purchases(row: dict) -> int:
@@ -765,6 +909,9 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "click_to_purchase": (summary["purchases"] / summary["clicks"] * 100) if summary["clicks"] else 0,
     }
 
+    # Build URGENT KILL LIST — campañas y posts que requieren acción inmediata
+    urgent_actions = build_urgent_actions(enriched_camps, post_ids_consolidated, summary, tracking)
+
     return {
         "_meta": snapshot.get("_meta", {}),
         "account": snapshot["account"],
@@ -777,6 +924,7 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "funnel": funnel,
         "post_ids": post_ids_consolidated,
         "audience": audience,
+        "urgent_actions": urgent_actions,
         "comparison": snapshot.get("comparison"),  # multi-account comparison if present
         "stats": {
             "campaigns_total": len(campaigns),

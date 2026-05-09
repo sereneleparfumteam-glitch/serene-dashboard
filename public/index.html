@@ -84,6 +84,57 @@
     /* Post row click feedback */
     .post-row{cursor:pointer}
     .post-row:hover .post-thumb{border-color:var(--accent)}
+    /* Urgent Actions panel */
+    .urgent-shell{
+      margin-bottom:48px;background:linear-gradient(135deg,rgba(244,63,94,.12) 0%,rgba(255,87,34,.08) 100%);
+      border:1px solid rgba(244,63,94,.30);border-radius:var(--r-xl);padding:28px;
+      position:relative;overflow:hidden;
+    }
+    .urgent-shell::before{
+      content:"";position:absolute;top:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,#f43f5e,#FF5722);
+      animation:pulse-bar 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse-bar{0%,100%{opacity:1}50%{opacity:.6}}
+    .urgent-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+    .urgent-head h2{font-size:22px;font-weight:800;letter-spacing:-.025em;color:var(--text-1);display:flex;align-items:center;gap:12px}
+    .urgent-head .siren{display:inline-flex;width:36px;height:36px;border-radius:10px;background:rgba(244,63,94,.15);align-items:center;justify-content:center;font-size:18px;animation:siren 1.5s ease-in-out infinite}
+    @keyframes siren{0%,100%{transform:scale(1)}50%{transform:scale(1.1);background:rgba(244,63,94,.25)}}
+    .urgent-count{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--rose);background:rgba(244,63,94,.10);padding:6px 12px;border-radius:99px;border:1px solid rgba(244,63,94,.25)}
+    .urgent-list{display:flex;flex-direction:column;gap:10px}
+    .urgent-card{
+      display:grid;grid-template-columns:60px 1fr auto;gap:18px;align-items:center;
+      padding:18px 20px;background:rgba(5,5,5,.5);border:1px solid var(--border);border-radius:var(--r-md);
+      transition:.2s var(--ease);cursor:pointer;
+    }
+    .urgent-card:hover{transform:translateX(3px);border-color:rgba(244,63,94,.35);background:rgba(244,63,94,.04)}
+    .urgent-card.critical{border-left:3px solid var(--rose)}
+    .urgent-card.warning{border-left:3px solid var(--accent-2)}
+    .urgent-action-tag{
+      font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;letter-spacing:.06em;
+      padding:8px 10px;border-radius:8px;text-align:center;line-height:1.2;
+    }
+    .urgent-action-tag.critical{background:var(--rose);color:#fff;box-shadow:0 4px 12px rgba(244,63,94,.4)}
+    .urgent-action-tag.warning{background:var(--accent-2);color:#0a0a0a}
+    .urgent-body h4{font-size:15px;font-weight:600;color:var(--text-1);letter-spacing:-.005em;margin-bottom:6px;line-height:1.3}
+    .urgent-body .reason{font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:6px}
+    .urgent-body .impact{font-size:12px;color:var(--rose);font-weight:600;display:flex;align-items:center;gap:6px}
+    .urgent-body .impact::before{content:"💸"}
+    .urgent-go{
+      font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;
+      padding:8px 14px;border-radius:99px;background:var(--text-1);color:var(--obsidian);
+      transition:.2s var(--ease);text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+    }
+    .urgent-go:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(255,255,255,.15)}
+    .urgent-empty{
+      text-align:center;padding:48px 20px;background:rgba(52,211,153,.04);border:1px solid rgba(52,211,153,.20);border-radius:var(--r-md);
+      color:var(--mint);font-weight:600;font-size:14px;
+    }
+    .urgent-empty::before{content:"✓ ";font-size:18px}
+    @media(max-width:640px){
+      .urgent-card{grid-template-columns:1fr;gap:10px}
+      .urgent-action-tag{align-self:flex-start}
+    }
     /* Print styles */
     @media print{
       body{background:#fff;color:#000}
@@ -288,6 +339,7 @@
       </div>
       <div class="sidebar-section">
         <span class="sidebar-section-label">Secciones</span>
+        <a class="sidebar-link" href="#urgent" data-target="urgent" style="color:var(--rose);font-weight:700">🚨 Urgentes <span class="sidebar-link-badge">2</span></a>
         <a class="sidebar-link active" href="#executive" data-target="executive">📊 Executive</a>
         <a class="sidebar-link" href="#funnel" data-target="funnel">🔻 Funnel</a>
         <a class="sidebar-link" href="#alerts" data-target="alerts">⚠ Insights <span class="sidebar-link-badge">8</span></a>
@@ -300,7 +352,7 @@
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span class="live-pill warn" style="font-size:10px;padding:4px 10px">unknown</span>
         </div>
-        v3.0 · Auto-generated<br>09 May 18:20
+        v3.0 · Auto-generated<br>09 May 18:29
       </div>
     </aside>
 
@@ -310,7 +362,7 @@
       <div class="topbar">
         <div class="topbar-title">
           <h1>Performance <span class="serif">command</span> center</h1>
-          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-02 → 2026-05-09 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-09 18:20</span></p>
+          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-02 → 2026-05-09 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-09 18:29</span></p>
         </div>
         <div class="topbar-actions">
           <span class="live-pill warn" data-tip="Data extraída via Meta Graph API v22.0 directamente">DATA REAL · META API</span>
@@ -326,6 +378,48 @@
       </div>
 
       <!-- Banner contextual -->
+      
+
+      <!-- ⚠ URGENT ACTIONS — kill list / fix list -->
+      
+      <section class="urgent-shell" id="urgent">
+        <div class="urgent-head">
+          <h2>
+            <span class="siren">🚨</span>
+            Acciones urgentes
+            <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--text-2);font-size:.7em;margin-left:6px">— hay que apagar</span>
+          </h2>
+          <span class="urgent-count">2 acciónes requeridas</span>
+        </div>
+
+        <div class="urgent-list">
+          
+          <div class="urgent-card critical" >
+            <div class="urgent-action-tag critical">REFRESCAR CREATIVE</div>
+            <div class="urgent-body">
+              <h4>Toda la cuenta</h4>
+              <div class="reason">Frecuencia 4.10 (target <2.5). Audiencia saturada — el creative está quemado.</div>
+              <div class="impact">Si no se rota, CPA seguirá subiendo. Hoy ya están en 4.1x exposición/persona.</div>
+            </div>
+            
+              <span class="urgent-go" style="background:var(--surface-3);color:var(--text-2)">Click para detalles</span>
+            
+          </div>
+          
+          <div class="urgent-card warning" >
+            <div class="urgent-action-tag warning">AUDITAR CHECKOUT</div>
+            <div class="urgent-body">
+              <h4>Flow Shopify ATC → Checkout</h4>
+              <div class="reason">De 4732 ATC solo 1011 llegan a checkout (79% drop).</div>
+              <div class="impact">Si esto fuera 50%, tendrías 1355 purchases más</div>
+            </div>
+            
+              <span class="urgent-go" style="background:var(--surface-3);color:var(--text-2);cursor:default">Manual</span>
+            
+          </div>
+          
+        </div>
+      </section>
       
 
       <!-- KPI Hero -->
@@ -2376,7 +2470,7 @@
       <!-- Footer -->
       <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px;color:var(--text-4);flex-wrap:wrap;gap:14px">
         <span>Serene · AI Performance Command Center · v3.0 — Python engine</span>
-        <span>act_1020250386264513 · Generado 2026-05-09 18:20</span>
+        <span>act_1020250386264513 · Generado 2026-05-09 18:29</span>
       </div>
 
     </main>
