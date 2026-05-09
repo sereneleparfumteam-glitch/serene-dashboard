@@ -8,9 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23050505'/%3E%3Cpath d='M50 20 L80 80 L20 80 Z' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF5722'/%3E%3Cstop offset='1' stop-color='%23FFB800'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{font-size:15px}
+    html{font-size:15px;scroll-behavior:smooth;scroll-padding-top:24px}
     body{font-family:'Inter Tight',system-ui,sans-serif;background:var(--obsidian);color:var(--text-1);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11","tnum";letter-spacing:-.011em;line-height:1.5;overflow-x:hidden}
     img,svg{display:block;max-width:100%}
     a{color:inherit;text-decoration:none}
@@ -55,6 +56,42 @@
     .live-pill.warn{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.25);color:var(--accent-2)}
     .live-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse 2.4s var(--ease) infinite}
     @keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+    /* Scroll progress bar (top) */
+    .scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;background:var(--grad-accent);box-shadow:0 0 12px rgba(255,87,34,.6);transition:width .08s linear}
+    /* Action button (regen) */
+    .action-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--surface-3);border:1px solid var(--border-lit);color:var(--text-2);font-size:12px;font-weight:600;cursor:pointer;transition:.2s var(--ease)}
+    .action-btn:hover{color:var(--text-1);background:var(--surface-2);border-color:var(--border-glow);transform:translateY(-1px)}
+    .action-btn svg{width:13px;height:13px}
+    .action-btn.spinning svg{animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Tooltip (CSS-only) */
+    [data-tip]{position:relative;cursor:help}
+    [data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);padding:6px 10px;border-radius:8px;background:#000;color:#fff;font-size:11px;font-weight:500;font-family:'Inter Tight',sans-serif;letter-spacing:-.005em;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s var(--ease);z-index:50;border:1px solid var(--border-lit)}
+    [data-tip]:hover::after{opacity:1}
+    /* Toast */
+    .toast{position:fixed;top:20px;right:20px;background:var(--surface-2);border:1px solid var(--border-lit);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:500;color:var(--text-1);box-shadow:var(--shadow-lg);z-index:100;transform:translateY(-120%);opacity:0;transition:transform .3s var(--ease),opacity .3s var(--ease)}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{border-color:rgba(52,211,153,.4)}
+    .toast.error{border-color:rgba(244,63,94,.4)}
+    /* Sidebar links — clickable */
+    .sidebar-link{text-decoration:none}
+    .sidebar-link:hover{background:rgba(255,255,255,.04);color:var(--text-1)}
+    /* Pill toggle interactivity */
+    .pill-toggle{cursor:pointer;border:none;background:none}
+    /* Campaign row clickable */
+    .campaigns-table tbody tr{cursor:pointer;transition:background .15s var(--ease)}
+    .campaigns-table tbody tr:hover{background:rgba(255,87,34,.04)}
+    /* Post row click feedback */
+    .post-row{cursor:pointer}
+    .post-row:hover .post-thumb{border-color:var(--accent)}
+    /* Print styles */
+    @media print{
+      body{background:#fff;color:#000}
+      .sidebar,.scroll-progress,.action-btn,.live-pill{display:none !important}
+      .main{padding:0}
+      .app{grid-template-columns:1fr}
+      .alert-card,.kpi-card,.account-card,.campaigns-shell,.post-list,.audience-card,.compare-card,.funnel-shell{break-inside:avoid;page-break-inside:avoid}
+    }
     .section{margin-bottom:48px}
     .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px;flex-wrap:wrap}
     .section-head h2{font-size:18px;font-weight:700;letter-spacing:-.018em}
@@ -240,6 +277,8 @@
   </style>
 </head>
 <body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="toast" id="toast"></div>
   <div class="app">
 
     <aside class="sidebar">
@@ -248,18 +287,20 @@
         <div><div>Serene · AI</div><small>COMMAND CENTER</small></div>
       </div>
       <div class="sidebar-section">
-        <span class="sidebar-section-label">Vista</span>
-        <a class="sidebar-link active">📊 Executive</a>
-        <a class="sidebar-link">📈 Campaigns <span class="sidebar-link-badge">48</span></a>
-        <a class="sidebar-link">🎬 Post IDs</a>
-        <a class="sidebar-link">👥 Audiences</a>
-        <a class="sidebar-link">⚠ Alerts <span class="sidebar-link-badge">8</span></a>
+        <span class="sidebar-section-label">Secciones</span>
+        <a class="sidebar-link active" href="#executive" data-target="executive">📊 Executive</a>
+        <a class="sidebar-link" href="#funnel" data-target="funnel">🔻 Funnel</a>
+        <a class="sidebar-link" href="#alerts" data-target="alerts">⚠ Insights <span class="sidebar-link-badge">8</span></a>
+        <a class="sidebar-link" href="#campaigns" data-target="campaigns">📈 Campaigns <span class="sidebar-link-badge">48</span></a>
+        <a class="sidebar-link" href="#post-ids" data-target="post-ids">🎬 Post IDs <span class="sidebar-link-badge" style="background:var(--accent-2);color:#000">39</span></a>
+        <a class="sidebar-link" href="#audience" data-target="audience">👥 Audience</a>
+        <a class="sidebar-link" href="#recommendations" data-target="recommendations">💡 Recos <span class="sidebar-link-badge" style="background:var(--mint);color:#000">3</span></a>
       </div>
       <div class="sidebar-footer">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span class="live-pill warn" style="font-size:10px;padding:4px 10px">unknown</span>
         </div>
-        v3.0 · Auto-generated<br>09 May 17:13
+        v3.0 · Auto-generated<br>09 May 18:20
       </div>
     </aside>
 
@@ -269,13 +310,18 @@
       <div class="topbar">
         <div class="topbar-title">
           <h1>Performance <span class="serif">command</span> center</h1>
-          <p>PRUEBA GABRIELA · 2026-05-02 → 2026-05-09 · Generado 2026-05-09 17:13</p>
+          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-02 → 2026-05-09 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-09 18:20</span></p>
         </div>
         <div class="topbar-actions">
-          <span class="live-pill warn">DATA REAL · META API</span>
-          <div class="pill-group">
-            <button class="pill-toggle active">CUSTOM</button>
-          </div>
+          <span class="live-pill warn" data-tip="Data extraída via Meta Graph API v22.0 directamente">DATA REAL · META API</span>
+          <button class="action-btn" id="btn-regen" data-tip="Dispara GitHub Action para regenerar (requiere PAT)">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0114-5.3M20 4v5h-5M20 12a8 8 0 01-14 5.3M4 20v-5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Refresh
+          </button>
+          <button class="action-btn" id="btn-print" data-tip="Imprimir o exportar como PDF">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Print
+          </button>
         </div>
       </div>
 
@@ -283,7 +329,7 @@
       
 
       <!-- KPI Hero -->
-      <section class="section">
+      <section class="section" id="executive">
         <div class="section-head">
           <h2>Resumen ejecutivo <small>· 8 días</small></h2>
           <span class="section-meta"><code>act_1020250386264513</code> · COP</span>
@@ -339,127 +385,9 @@
 
       <!-- Multi-Account Comparison (only when combined snapshot) -->
       
-      <section class="section">
-        <div class="section-head">
-          <h2>Multi-Account Comparison <small>· 2 cuentas</small></h2>
-          <span class="section-meta">1 active · USD blended</span>
-        </div>
-
-        <!-- Combined totals -->
-        <div class="compare-totals">
-          <div class="compare-totals-grid">
-            <div class="compare-total-item">
-              <h4>Spend Combined</h4>
-              <div class="v"><small>$</small>5.7<small>K USD</small></div>
-              <p>Suma de 2 cuentas</p>
-            </div>
-            <div class="compare-total-item">
-              <h4>Purchases</h4>
-              <div class="v">450</div>
-              <p>Total cross-account</p>
-            </div>
-            <div class="compare-total-item">
-              <h4>Blended CPA</h4>
-              <div class="v"><small>$</small>12.71<small> USD</small></div>
-              <p>Promedio ponderado</p>
-            </div>
-            <div class="compare-total-item">
-              <h4>Blended Freq</h4>
-              <div class="v">3.94<small>x</small></div>
-              <p>Por impressions</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Per-account cards -->
-        <div class="compare-cards">
-          
-          <div class="compare-card primary">
-            <span class="compare-card-status active">unknown</span>
-            <div class="compare-card-name">act_1020250386264513 · COP</div>
-            <div class="compare-card-title">PRUEBA GABRIELA</div>
-            <div class="compare-card-stats">
-              <div>
-                <div class="compare-stat-label">Spend</div>
-                <div class="compare-stat-val">19.18M<small> COP</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Spend USD</div>
-                <div class="compare-stat-val">$4.8K</div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Purchases</div>
-                <div class="compare-stat-val">349</div>
-              </div>
-              <div>
-                <div class="compare-stat-label">CPA</div>
-                <div class="compare-stat-val">54.9K<small> COP</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Frequency</div>
-                <div class="compare-stat-val">4.1<small>x</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">CTR</div>
-                <div class="compare-stat-val">1.99<small>%</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Campañas</div>
-                <div class="compare-stat-val">5<small>/48</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Periodo</div>
-                <div class="compare-stat-val" style="font-size:11px">2026-05-02 → 2026-05-09</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="compare-card">
-            <span class="compare-card-status dormant">dormant</span>
-            <div class="compare-card-name">act_935968735451363 · COP</div>
-            <div class="compare-card-title">SERENE COL 2.0 CTA 2</div>
-            <div class="compare-card-stats">
-              <div>
-                <div class="compare-stat-label">Spend</div>
-                <div class="compare-stat-val">3.71M<small> COP</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Spend USD</div>
-                <div class="compare-stat-val">$927</div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Purchases</div>
-                <div class="compare-stat-val">101</div>
-              </div>
-              <div>
-                <div class="compare-stat-label">CPA</div>
-                <div class="compare-stat-val">36.7K<small> COP</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Frequency</div>
-                <div class="compare-stat-val">3.34<small>x</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">CTR</div>
-                <div class="compare-stat-val">0.77<small>%</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Campañas</div>
-                <div class="compare-stat-val">0<small>/6</small></div>
-              </div>
-              <div>
-                <div class="compare-stat-label">Periodo</div>
-                <div class="compare-stat-val" style="font-size:11px">2026-02-01 → 2026-02-28</div>
-              </div>
-            </div>
-          </div>
-          
-        </div>
-      </section>
-      
 
       <!-- Funnel -->
-      <section class="section">
+      <section class="section" id="funnel">
         <div class="section-head">
           <h2>Funnel de conversión</h2>
           <span class="section-meta">5 etapas · pixel events</span>
@@ -527,7 +455,7 @@
 
       <!-- Insights -->
       
-      <section class="section">
+      <section class="section" id="alerts">
         <div class="section-head">
           <h2>Insights AI <small>· 8 detectados</small></h2>
           <span class="section-meta">Análisis automático · pattern recognition</span>
@@ -779,9 +707,9 @@
       
 
       <!-- Campaigns table -->
-      <section class="section">
+      <section class="section" id="campaigns">
         <div class="section-head">
-          <h2>Campañas <small>· ranked por score</small></h2>
+          <h2>Campañas <small>· ranked por score · click para abrir en Meta</small></h2>
           <span class="section-meta">48 · 10 scale · 17 monitor · 21 stop</span>
         </div>
         <div class="campaigns-shell">
@@ -800,7 +728,7 @@
             </thead>
             <tbody>
               
-              <tr >
+              <tr data-campaign-id="120243206457510243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">REDITUS LOTE 1 KIT MANTEQUILLA 28/04</div>
                   <div class="camp-meta">ID 120243206457510243 · OUTCOME_SALES · 70.0K daily · VIDEO</div>
@@ -819,7 +747,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243226959370243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM KIT FAV NUEVO 28/04 PT2</div>
                   <div class="camp-meta">ID 120243226959370243 · OUTCOME_SALES · 34.9K daily · IMAGE</div>
@@ -838,7 +766,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243357885180243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A KIT FAV NUEVO lote 2 30/04</div>
                   <div class="camp-meta">ID 120243357885180243 · OUTCOME_SALES · 40.0K daily · IMAGE</div>
@@ -857,7 +785,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243447099690243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">V MARIANA 3X120 NUEVO MADRE 02/05/2026</div>
                   <div class="camp-meta">ID 120243447099690243 · OUTCOME_SALES · 45.0K daily · VIDEO</div>
@@ -876,7 +804,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120242566732530243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">IMGN MARIANA A 2X120 DIA MADRE PT3 16/04</div>
                   <div class="camp-meta">ID 120242566732530243 · OUTCOME_SALES · 20.0K daily · IMAGE</div>
@@ -895,7 +823,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243153846900243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A 3X120 MADRE 27/04 (NUEVO)</div>
                   <div class="camp-meta">ID 120243153846900243 · OUTCOME_SALES · 19.0K daily · IMAGE</div>
@@ -914,7 +842,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243360546770243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">AB MARIANA A 3X120 NUEVO MADRE 29/04 PT2…</div>
                   <div class="camp-meta">ID 120243360546770243 · OUTCOME_SALES · 50.0K daily · IMAGE</div>
@@ -933,7 +861,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243206682080243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">REDITUS LOTE 2 MANTEQUILLA HOMBRE 28/04</div>
                   <div class="camp-meta">ID 120243206682080243 · OUTCOME_SALES · 39.9K daily · VIDEO</div>
@@ -952,7 +880,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243228136800243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A 2X120 MADRE 29/04</div>
                   <div class="camp-meta">ID 120243228136800243 · OUTCOME_SALES · 499.0K daily · IMAGE</div>
@@ -971,7 +899,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120242565756800243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM 3X120 DIA MADRE pt2 16/04</div>
                   <div class="camp-meta">ID 120242565756800243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -990,7 +918,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243227863200243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JEFF LOTE 5 ABRIL KIT FAV NUEVO 29/04 PT2</div>
                   <div class="camp-meta">ID 120243227863200243 · OUTCOME_SALES · 15.5K daily · VIDEO</div>
@@ -1009,7 +937,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243447911850243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST ESCALA CBO WIN 02/05/2026</div>
                   <div class="camp-meta">ID 120243447911850243 · OUTCOME_SALES · 399.2K daily · VIDEO</div>
@@ -1028,7 +956,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120241015722870243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TESTEO 18/03</div>
                   <div class="camp-meta">ID 120241015722870243 · OUTCOME_SALES · — daily · VIDEO</div>
@@ -1047,7 +975,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243202027350243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM 3X120 MADRE 28/04 (NUEVO) PT2</div>
                   <div class="camp-meta">ID 120243202027350243 · OUTCOME_SALES · 40.0K daily · IMAGE</div>
@@ -1066,7 +994,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243360547110243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">AB MARIANA A 3X120 NUEVO MADRE 29/04 PT1…</div>
                   <div class="camp-meta">ID 120243360547110243 · OUTCOME_SALES · 30.0K daily · IMAGE</div>
@@ -1085,7 +1013,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243448134350243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST COST CAP WIN 02/05/2026</div>
                   <div class="camp-meta">ID 120243448134350243 · OUTCOME_SALES · 20.0K daily · VIDEO</div>
@@ -1104,7 +1032,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243154164580243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A 2X120 MADRE 27/04</div>
                   <div class="camp-meta">ID 120243154164580243 · OUTCOME_SALES · 50.5K daily · IMAGE</div>
@@ -1123,7 +1051,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243154979610243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM CG 2X120 MADRE 28/04</div>
                   <div class="camp-meta">ID 120243154979610243 · OUTCOME_SALES · 25.0K daily · IMAGE</div>
@@ -1142,7 +1070,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243448598420243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">V MARIANA TODAS 02/05/2026</div>
                   <div class="camp-meta">ID 120243448598420243 · OUTCOME_SALES · 15.0K daily · VIDEO</div>
@@ -1161,7 +1089,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243227271230243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JEFF LOTE 5 ABRIL KIT FAV NUEVO 29/04 PT1</div>
                   <div class="camp-meta">ID 120243227271230243 · OUTCOME_SALES · 50.0K daily · VIDEO</div>
@@ -1180,7 +1108,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120242973353210243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST CBO VIDEOS COLABORACION POST ID INST…</div>
                   <div class="camp-meta">ID 120242973353210243 · OUTCOME_SALES · 100.0K daily · VIDEO</div>
@@ -1199,7 +1127,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243355030110243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">V NUEVOS CALLE 30/04</div>
                   <div class="camp-meta">ID 120243355030110243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -1218,7 +1146,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243199448620243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A M+P MADRE 28/04</div>
                   <div class="camp-meta">ID 120243199448620243 · OUTCOME_SALES · 25.0K daily · IMAGE</div>
@@ -1237,7 +1165,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243360546860243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">AB JUANM 3X120 DIA MADRE pt2 16/04 - Copia</div>
                   <div class="camp-meta">ID 120243360546860243 · OUTCOME_SALES · 50.0K daily · VIDEO</div>
@@ -1256,7 +1184,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243355619770243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A KIT FAV NUEVO 30/04</div>
                   <div class="camp-meta">ID 120243355619770243 · OUTCOME_SALES · 45.0K daily · IMAGE</div>
@@ -1275,7 +1203,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243350330270243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">KIT JEFF FAV WIN 30/04 NUEVO</div>
                   <div class="camp-meta">ID 120243350330270243 · OUTCOME_SALES · 20.0K daily · VIDEO</div>
@@ -1294,7 +1222,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243226898480243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM KIT FAV NUEVO 28/04 PT1</div>
                   <div class="camp-meta">ID 120243226898480243 · OUTCOME_SALES · 35.0K daily · IMAGE</div>
@@ -1313,7 +1241,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243360547200243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">AB JUANM 3X120 MADRE 28/04 (NUEVO) PT2 -…</div>
                   <div class="camp-meta">ID 120243360547200243 · OUTCOME_SALES · 40.0K daily · IMAGE</div>
@@ -1332,7 +1260,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243448200850243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST BID CAP WIN 02/05/2026</div>
                   <div class="camp-meta">ID 120243448200850243 · OUTCOME_SALES · 250.0K daily · VIDEO</div>
@@ -1351,7 +1279,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243205702100243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JEFF LOTE 4 ABRIL KIT ESENCIA FEM 28/04 P…</div>
                   <div class="camp-meta">ID 120243205702100243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -1370,7 +1298,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243360546850243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">AB MARIANA A 3X120 MADRE 27/04 (NUEVO) -…</div>
                   <div class="camp-meta">ID 120243360546850243 · OUTCOME_SALES · 25.0K daily · IMAGE</div>
@@ -1389,7 +1317,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120242168156990243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST BID CAP (G) TODO 08/04</div>
                   <div class="camp-meta">ID 120242168156990243 · OUTCOME_SALES · 250.0K daily · VIDEO</div>
@@ -1408,7 +1336,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243210008590243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">Campaña bot zareth 28/04</div>
                   <div class="camp-meta">ID 120243210008590243 · OUTCOME_ENGAGEMENT · 45.0K daily · IMAGE</div>
@@ -1427,7 +1355,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243446723210243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">V MARIANA 2X120 MADRE 02/05/2026</div>
                   <div class="camp-meta">ID 120243446723210243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -1446,7 +1374,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243448890530243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">V MARIANA M+P 02/05/2026</div>
                   <div class="camp-meta">ID 120243448890530243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -1465,7 +1393,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243225741300243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">REDITUS LOTE 4 ABRIL MANTEQUILLA MUJER 28…</div>
                   <div class="camp-meta">ID 120243225741300243 · OUTCOME_SALES · 15.0K daily · VIDEO</div>
@@ -1484,7 +1412,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243228001810243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A 3X120 NUEVO MADRE 29/04 PT1</div>
                   <div class="camp-meta">ID 120243228001810243 · OUTCOME_SALES · 20.0K daily · IMAGE</div>
@@ -1503,7 +1431,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243203718430243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST POST WIN CREMA + ELEGI MAN+ COPY STO…</div>
                   <div class="camp-meta">ID 120243203718430243 · OUTCOME_SALES · 19.0K daily · VIDEO</div>
@@ -1522,7 +1450,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243155133400243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM CG 2X120 MADRE 28/04 PT2</div>
                   <div class="camp-meta">ID 120243155133400243 · OUTCOME_SALES · 20.0K daily · IMAGE</div>
@@ -1541,7 +1469,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120242566696650243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">IMGN MARIANA A 2X120 DIA MADRE PT2 16/04</div>
                   <div class="camp-meta">ID 120242566696650243 · OUTCOME_SALES · 40.0K daily · IMAGE</div>
@@ -1560,7 +1488,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243228059180243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A 3X120 NUEVO MADRE 29/04 PT2</div>
                   <div class="camp-meta">ID 120243228059180243 · OUTCOME_SALES · 30.0K daily · IMAGE</div>
@@ -1579,7 +1507,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243360547010243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">AB JUANM 3X120 MADRE 28/04 (NUEVO) - Copia</div>
                   <div class="camp-meta">ID 120243360547010243 · OUTCOME_SALES · 40.0K daily · IMAGE</div>
@@ -1598,7 +1526,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243449008330243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">V MARIANA K SERENE BAS 02/05/2026</div>
                   <div class="camp-meta">ID 120243449008330243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -1617,7 +1545,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243154375590243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">MARIANA A M+P MADRE 28/04</div>
                   <div class="camp-meta">ID 120243154375590243 · OUTCOME_SALES · 40.0K daily · IMAGE</div>
@@ -1636,7 +1564,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120242657301660243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">TEST BID CAP JEFF KIT TT WIN  18/04/2026</div>
                   <div class="camp-meta">ID 120242657301660243 · OUTCOME_SALES · 250.0K daily · VIDEO</div>
@@ -1655,7 +1583,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243205214080243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JEFF LOTE 4 ABRIL KIT ESENCIA FEM 28/04 P…</div>
                   <div class="camp-meta">ID 120243205214080243 · OUTCOME_SALES · 40.0K daily · VIDEO</div>
@@ -1674,7 +1602,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243201872820243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">JUANM 3X120 MADRE 28/04 (NUEVO)</div>
                   <div class="camp-meta">ID 120243201872820243 · OUTCOME_SALES · 20.0K daily · IMAGE</div>
@@ -1693,7 +1621,7 @@
                 </td>
               </tr>
               
-              <tr >
+              <tr data-campaign-id="120243215707950243" data-account-id="act_1020250386264513" >
                 <td>
                   <div class="camp-name">REDITUS LOTE 3 KIT MANTEQUILLA 28/04</div>
                   <div class="camp-meta">ID 120243215707950243 · OUTCOME_SALES · 15.0K daily · VIDEO</div>
@@ -1719,7 +1647,7 @@
 
       <!-- Audience Intelligence -->
       
-      <section class="section">
+      <section class="section" id="audience">
         <div class="section-head">
           <h2>Audience Intelligence <small>· demographics + placement + geo</small></h2>
           <span class="section-meta">Breakdown account-level</span>
@@ -1911,14 +1839,14 @@
 
       <!-- Post ID Intelligence -->
       
-      <section class="section">
+      <section class="section" id="post-ids">
         <div class="section-head">
-          <h2>Post ID Intelligence <small>· consolidado cross-adset</small></h2>
+          <h2>Post ID Intelligence <small>· consolidado cross-adset · click para copiar ID</small></h2>
           <span class="section-meta">132 posts · 39 con conversiones</span>
         </div>
         <div class="post-list">
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122173273982779116" data-story-id="492870283918977_122173273982779116">
             <div class="post-rank top">01</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/655089456_2043149039941323_8602495894452580488_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=9eGWw_kj9CoQ7kNvwGHT5gu&_nc_oc=AdqQXtOtAm-a9_FIo_BvIrMCR-ETMmUJB-0kGlUzy3j-O0g-_378gA42ZegjRm32VLs&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=WIIf-XMNoWVGjGCzNDNUIA&_nc_tpa=Q5bMBQEbC5ObnXARmAyIWFRf5KXTKrB1WF_nDGpMDOMxcpPBbAfwLaLVe1uT1oCVnELdM7HR3c1wYfmu3A&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af6M-TcalQ8-2rHJwBFjF4OHvkRP1LdBysH_LjzK8Q29YA&oe=6A05419B" alt="thumb" onerror="this.style.display='none'">
@@ -1950,7 +1878,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122181748274771725" data-story-id="497688980103949_122181748274771725">
             <div class="post-rank top">02</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/660090223_1242782881383665_6835334402495600800_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=V54zygIoTO0Q7kNvwFKHMSL&_nc_oc=AdqkgSxL2glxQq89Q2O5mAJyAed0xa79oh762LJJP6-oNNL1j9_q1Ai4kqtj65-5xS0&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=jEny0n0stF7D5hWTiHIpgQ&_nc_tpa=Q5bMBQFX3SHj8YnH-nJJya9D7vOL6-5rKDIfxmRMchnqcoCzNlGd9T0-8i2-lgV1Qmek3FMkRGwN3Dp64Q&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af6I3RvIvecbMfGLrDGj2NxtTWCIu3_pf_4mdvNXt9htVA&oe=6A051F10" alt="thumb" onerror="this.style.display='none'">
@@ -1982,7 +1910,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122304128036220474" data-story-id="185958654611347_122304128036220474">
             <div class="post-rank top">03</div>
             <div class="post-thumb">
               <img src="https://external.xx.fbcdn.net/emg1/v/t13/14788417921206387166?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQI5esglJmSGDNCiU0SEyhJb3d1T3WfEOidi4gkgMQ2IH3BAhV7LLVnnTLdHV1kN79xyhqxT1Y2rI80AIZgmDcD4vaIb0ZAiLigwm7fDqjHL9KkLy05YXnNVB7EpjX1-gYfqtNkIdzXwj6rqOBzht33U&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AOgd6ZUEAAAA&_nc_gid=jEny0n0stF7D5hWTiHIpgQ&_nc_oc=AdqjD7k-SjpaVbZo_leuLThcHRlDzzso0kKKr2KzkBkdzf-cvescBNvXIVAvaUqhuJA&ccb=13-1&oh=06_Q3-_AVNGLFxXMuYv56Oyw3akjMPsAUBaPUvO40z0fDQvGd7B&oe=6A014F59&_nc_sid=58080a" alt="thumb" onerror="this.style.display='none'">
@@ -2014,7 +1942,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122176755626771663" data-story-id="596000453592036_122176755626771663">
             <div class="post-rank">04</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/682127228_893858053676980_7908839947732369939_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=tlRf0-N6xC0Q7kNvwEWNaky&_nc_oc=Adqptzhy955BnGeenYU-i7PrDP2iTXr0WzS4lmDxIN7IRm24e7nearRa2ka3B_lhjGU&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=jEny0n0stF7D5hWTiHIpgQ&_nc_tpa=Q5bMBQE6-7dPK-gZoYWhBSeHHb4FEYnCf-LVZi-SuZpVce2nECBhAPU8yP3_qxgvw-Q1_bz4h4efJSpeFw&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af6hp817WuLUbjaIG_mQBdWxz7AwHCTG-Pcmc-omLLyxwg&oe=6A052199" alt="thumb" onerror="this.style.display='none'">
@@ -2046,7 +1974,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122296918340220474" data-story-id="185958654611347_122296918340220474">
             <div class="post-rank">05</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/655963312_1280458754178500_7721152561456967215_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=dQRJu6RH8kIQ7kNvwHeQbBT&_nc_oc=Adr7rfPXLJgSaHVCbzZbvpjwu-vVwMZ9pxJgF674e4rr3puYFSniu8g6w5OBwCra6LM&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=WIIf-XMNoWVGjGCzNDNUIA&_nc_tpa=Q5bMBQHIdYi0KNIRAiMhLgFM7Dab5wGxZtdgLcHNARz3V2gL5oi7WNRbwkde_DkP1CMz3i9xb7fE8mwBHA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af5umG5PUsqQsoipaMMeeb9oebab9bhd0oGTJvIoxCp1lw&oe=6A052E48" alt="thumb" onerror="this.style.display='none'">
@@ -2078,7 +2006,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122171734526771663" data-story-id="596000453592036_122171734526771663">
             <div class="post-rank">06</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/655228716_955288226856524_3793554794026373637_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=f7xBbc31rw0Q7kNvwHVUV7Y&_nc_oc=Adr403QkaHfezvP1KAq-7Wjbl2qCR4UuwGq3gveS1D98jL3laZL68Z_4zrDhc-EH510&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=WIIf-XMNoWVGjGCzNDNUIA&_nc_tpa=Q5bMBQHcq5suthh_BM-rVccEOP9sXUaEiEl30D-BvgV6sgSRlDB8U6hQd0YPkq0R4u8hWMPGyq8S0PaC-w&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af5KE1JSWWHF_dN_N4nOvEBnDghgEQfHGHBfIpIje4YF2Q&oe=6A0539F7" alt="thumb" onerror="this.style.display='none'">
@@ -2110,7 +2038,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122176248584771725" data-story-id="497688980103949_122176248584771725">
             <div class="post-rank">07</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/653784966_909122795085602_8159985449841356009_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=gke6zbnfhfYQ7kNvwF5pxRD&_nc_oc=AdoFQJncwT0TZFJl1NiaWe74DOW9LJIR3DqVFV6fgvi6AC8-nlbPiU2YTJdMUYpgX6E&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=hRSQWRckBn2ntr_B1bL19A&_nc_tpa=Q5bMBQHUOYnYb_87T3dZOawRRaiLz7uGtEJ_GCy3MAvE87xyCfVZFVxBtYGnb22bvuSCICSYMUQPbTgCmA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af4CjdtXiWefy866OHgZ_JfA1Kh9RkTmmLRlfMJDad3RvA&oe=6A0550B0" alt="thumb" onerror="this.style.display='none'">
@@ -2142,7 +2070,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122181748148771725" data-story-id="497688980103949_122181748148771725">
             <div class="post-rank">08</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/650828903_2813890065631261_4185484811725596007_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=vMoYzhse548Q7kNvwFGulNI&_nc_oc=AdoL4r1DnPoH3LSmQLVCqNTw1NnHAgFfQU93ZoS0XymaoZmq4RJmro4AjlCllpQMNFw&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=I7hVkdrex-iav12jIr25sQ&_nc_tpa=Q5bMBQGEAAxetHt3sBHr6ZPEWUijwuK1xQ_d3DiPmzd3G9q1AiOWv2yb6gJS6FC7hDDRT-JNI2u1hkqEhA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af5zPOO2X1m4HmqHNYbVWMN0KTbINYWo6Yu86RCECOMovA&oe=6A0523F9" alt="thumb" onerror="this.style.display='none'">
@@ -2174,7 +2102,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122115888141235578" data-story-id="1022683384252431_122115888141235578">
             <div class="post-rank">09</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/667383592_958297693388509_9141270387447861980_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=piOWU-o31wAQ7kNvwHf6D5k&_nc_oc=Adquf7ST7FCV7bC8U4xPFHTsgVBDnZKMmcBDHvDp6T1Nm_NiguBhocNeDfOQFT3vQ_w&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=I7hVkdrex-iav12jIr25sQ&_nc_tpa=Q5bMBQEObNZJAlXlfrT1U5RcGYN-SirS_8_8-7kW6ylnxFNrx5q-DtF1kwQBnlZaD0fUPjOdEK-MHj10sA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af5q80M3jOm7EX7yrh23j1KhDF9aWUVY7qTS0hFHQ87zKA&oe=6A0521E0" alt="thumb" onerror="this.style.display='none'">
@@ -2206,7 +2134,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122177498480779116" data-story-id="492870283918977_122177498480779116">
             <div class="post-rank">10</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/655202288_4250662851856876_6997174821614002710_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=gzC2VbFiCcoQ7kNvwGbLG4M&_nc_oc=Adr9jvWBSOzDRU8YE5B_UwwlO0i5Sb_FXzH1du69s1y-q6uC5ry1iz8Vykm0EwiJvWA&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=jEny0n0stF7D5hWTiHIpgQ&_nc_tpa=Q5bMBQG_z7kCSzroc2KhY1klkYb9AFynHYHf29FuavagberZrI-ic_ElqHOjlpLTuYuBC95wtWh-MQ6EbA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af4vIkA1pJQhehJRicNgI8x1dZvhQQV2HOlfw9x_nqBh9g&oe=6A0527B0" alt="thumb" onerror="this.style.display='none'">
@@ -2238,7 +2166,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122115685071235578" data-story-id="1022683384252431_122115685071235578">
             <div class="post-rank">11</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/666585698_4192426454236271_6635206731534118479_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=jmt-PcTwjMoQ7kNvwGbvZ6-&_nc_oc=Adpjj21xZhwLPX9d6D0JRabEJXyTRfsuSvuvAYzxtzfJ7lcX5fQbb35swgUQ14jV1sk&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=WIIf-XMNoWVGjGCzNDNUIA&_nc_tpa=Q5bMBQFvQgkwjX4GC3vHjO46sz0_8U_z5inuBDPB9LxJr2kH1B5a8rSyf9DyM7wdAvYCbl9FyuBxdq3bHA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af5yXN1xsWHEVOx7smG16iEM6_HFBJ9g-M9bjZp0MIlr4w&oe=6A05468A" alt="thumb" onerror="this.style.display='none'">
@@ -2270,7 +2198,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122119078365235578" data-story-id="1022683384252431_122119078365235578">
             <div class="post-rank">12</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/668482302_979476751926054_3759465064300828341_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=BDzVLe1MFIEQ7kNvwGypo7-&_nc_oc=AdqvufK0UWqGJ9E-e8l_lQXCtKYmSya8nzY6HcnvWu-MY3Gz4mpS_IM0Dzyz5XMVibo&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=I7hVkdrex-iav12jIr25sQ&_nc_tpa=Q5bMBQGLhxUXCUM4z2qCjdiefP2YxzE8dwKQ-8ElEc1n4-uDYxFwW1sdvRc2OnpXdgn8tTSclsLCYFV99A&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af7AthbPyVTWsJmczjdAeqoNyYkZ-ePS1-2CsBg_eriLHw&oe=6A05240F" alt="thumb" onerror="this.style.display='none'">
@@ -2302,7 +2230,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122214524150451526" data-story-id="421062164414918_122214524150451526">
             <div class="post-rank">13</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/683204976_2491400641322479_3607038494733501592_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=Z_TP9P3Fto8Q7kNvwGPbOyk&_nc_oc=AdqN475-C4dzOhv0m5a5L2L_OhermVat-8ggUXpvL1y2IFZG9t43bwz3l7s29RRVYRU&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=I7hVkdrex-iav12jIr25sQ&_nc_tpa=Q5bMBQE62wFUx44cMuxteWlXt0xitsii5IGqPvwVcoZZBe8lSniZnd4uvnL1DYWF9UVFTfqi7nisat9CGA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af6XQ53qxmKsGL30JI_n_VVsZSwuq7hXUwhRU7UfPDKJlg&oe=6A051F9D" alt="thumb" onerror="this.style.display='none'">
@@ -2334,7 +2262,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122174146844771663" data-story-id="596000453592036_122174146844771663">
             <div class="post-rank">14</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/655657855_1223441089546261_1190888672820386629_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=b-_KFWUQq6IQ7kNvwHbURla&_nc_oc=Adrqa5wVTENxanNZHNa7wBwh0P7cemQLywjh5cvZuxurDrPUSss9ZlxQBPWwa3iRubc&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=WIIf-XMNoWVGjGCzNDNUIA&_nc_tpa=Q5bMBQHyEuD6q-0IVO74Img4YPzNyAVKpfhng7HLS0Ul6gfd-UuOTN9W-xAtn1U2GEkK9mr13nvT_zuBGA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af4nDsbyD_fxHhflmeh1tshookX6_ZhHrofTJbm3l-9ZaA&oe=6A053D23" alt="thumb" onerror="this.style.display='none'">
@@ -2366,7 +2294,7 @@
             </div>
           </div>
           
-          <div class="post-row">
+          <div class="post-row" data-post-id="122304716084220474" data-story-id="185958654611347_122304716084220474">
             <div class="post-rank">15</div>
             <div class="post-thumb">
               <img src="https://scontent.xx.fbcdn.net/v/t15.5256-10/684583982_803481562555454_3223279862163862618_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=KXH4qQDhgIsQ7kNvwF3FeXG&_nc_oc=Adqvce4MrUmxJ90r3GGedqJbNxNBgUWwh2FH8G2Up59nUX2m9XVkAGrakgxl2J7MyIU&_nc_zt=23&_nc_ht=scontent.xx&edm=AOgd6ZUEAAAA&_nc_gid=jEny0n0stF7D5hWTiHIpgQ&_nc_tpa=Q5bMBQF5FudJ1z6PHWS7o6rcfEyec_DVI_Ni9Z7PDO3REpKuCfh1m9M17vDE6n7womn4PnnfNa5WE7nUKA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af7Eh5rkMY6tEgKJh34a0ICEFDynrcCCtWhF28lyspo9gg&oe=6A055130" alt="thumb" onerror="this.style.display='none'">
@@ -2407,7 +2335,7 @@
 
       <!-- Recommendations -->
       
-      <section class="section">
+      <section class="section" id="recommendations">
         <div class="section-head">
           <h2>Recomendaciones AI <small>· basadas en data real</small></h2>
           <span class="section-meta">3 acciones priorizadas</span>
@@ -2448,10 +2376,131 @@
       <!-- Footer -->
       <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px;color:var(--text-4);flex-wrap:wrap;gap:14px">
         <span>Serene · AI Performance Command Center · v3.0 — Python engine</span>
-        <span>act_1020250386264513 · Generado 2026-05-09 17:13</span>
+        <span>act_1020250386264513 · Generado 2026-05-09 18:20</span>
       </div>
 
     </main>
   </div>
+
+  <script>
+  (function(){
+    'use strict';
+
+    // ── Toast helper ──
+    const toastEl = document.getElementById('toast');
+    let toastTimer;
+    function toast(msg, type='success', ms=2400){
+      toastEl.textContent = msg;
+      toastEl.className = 'toast show ' + type;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
+    }
+
+    // ── Scroll progress bar ──
+    const bar = document.getElementById('scrollProgress');
+    function updateProgress(){
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = h > 0 ? (window.scrollY / h * 100) + '%' : '0%';
+    }
+    window.addEventListener('scroll', updateProgress, {passive:true});
+    updateProgress();
+
+    // ── Sidebar scroll-spy + click ──
+    const links = document.querySelectorAll('.sidebar-link[data-target]');
+    const sections = Array.from(links).map(l => document.getElementById(l.dataset.target)).filter(Boolean);
+
+    function setActive(id){
+      links.forEach(l => l.classList.toggle('active', l.dataset.target === id));
+    }
+    if (sections.length) {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      }, { rootMargin: '-30% 0px -60% 0px' });
+      sections.forEach(s => obs.observe(s));
+    }
+
+    // ── Campaign row → open Meta Ads Manager ──
+    document.querySelectorAll('.campaigns-table tbody tr[data-campaign-id]').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const camp = tr.dataset.campaignId;
+        const act = (tr.dataset.accountId || '').replace(/^act_/, '');
+        if (!camp || !act) return;
+        const url = `https://business.facebook.com/adsmanager/manage/adsets?act=${act}&selected_campaign_ids=${camp}`;
+        window.open(url, '_blank', 'noopener');
+        toast(`Abriendo "${tr.querySelector('.camp-name')?.textContent || 'campaña'}" en Meta Ads`, 'success');
+      });
+    });
+
+    // ── Post row → copy post_id + offer link ──
+    document.querySelectorAll('.post-row[data-post-id]').forEach(row => {
+      row.addEventListener('click', async (e) => {
+        const pid = row.dataset.postId;
+        const sid = row.dataset.storyId;
+        try {
+          await navigator.clipboard.writeText(pid);
+          toast(`Post ID copiado: ${pid.slice(-12)}`, 'success');
+        } catch(err) {
+          toast('No se pudo copiar — usa Ctrl+C', 'error');
+        }
+        // If shift-click, also open the post in Facebook
+        if (e.shiftKey && sid) {
+          window.open(`https://facebook.com/${sid}`, '_blank', 'noopener');
+        }
+      });
+    });
+
+    // ── Refresh button → triggers GitHub workflow_dispatch ──
+    const btnRegen = document.getElementById('btn-regen');
+    if (btnRegen) {
+      btnRegen.addEventListener('click', () => {
+        // Open the GitHub Actions page directly — user clicks "Run workflow"
+        // (We can't trigger workflow_dispatch from frontend without a PAT exposed)
+        window.open('https://github.com/sereneleparfumteam-glitch/serene-dashboard/actions/workflows/daily.yml', '_blank', 'noopener');
+        toast('Abriendo GitHub Actions — click "Run workflow"', 'success', 3500);
+      });
+    }
+
+    // ── Print button ──
+    const btnPrint = document.getElementById('btn-print');
+    if (btnPrint) btnPrint.addEventListener('click', () => window.print());
+
+    // ── Pill toggles (visual only, with feedback) ──
+    document.querySelectorAll('.pill-group').forEach(group => {
+      group.querySelectorAll('.pill-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.pill-toggle').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          toast(`Filtro "${btn.textContent.trim()}" — pendiente: regenerar con ese rango`, 'success', 2800);
+        });
+      });
+    });
+
+    // ── Sortable campaign table ──
+    document.querySelectorAll('.campaigns-table thead th').forEach((th, idx) => {
+      if (idx === 0 || idx === 1) return; // skip name + status
+      th.style.cursor = 'pointer';
+      th.style.userSelect = 'none';
+      let asc = false;
+      th.addEventListener('click', () => {
+        const tbody = th.closest('table').querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+          const av = a.cells[idx].textContent.trim();
+          const bv = b.cells[idx].textContent.trim();
+          const an = parseFloat(av.replace(/[^\d.-]/g, '')) || 0;
+          const bn = parseFloat(bv.replace(/[^\d.-]/g, '')) || 0;
+          return asc ? an - bn : bn - an;
+        });
+        asc = !asc;
+        rows.forEach(r => tbody.appendChild(r));
+        toast(`Ordenado por ${th.textContent.trim()} ${asc ? '↓' : '↑'}`, 'success', 1500);
+      });
+    });
+
+    console.log('✓ Dashboard interactive layer loaded');
+  })();
+  </script>
 </body>
 </html>
