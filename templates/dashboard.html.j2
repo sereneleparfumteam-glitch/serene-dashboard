@@ -135,6 +135,68 @@
       .urgent-card{grid-template-columns:1fr;gap:10px}
       .urgent-action-tag{align-self:flex-start}
     }
+    /* ─── Detail Modal ─── */
+    .modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px;animation:overlayIn .25s var(--ease)}
+    .modal-overlay.active{display:flex}
+    @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+    .modal{
+      width:100%;max-width:720px;max-height:90vh;overflow-y:auto;
+      background:var(--surface-1);border:1px solid var(--border-lit);border-radius:var(--r-xl);
+      box-shadow:var(--shadow-xl);
+      animation:modalIn .35s var(--ease);
+    }
+    @keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+    .modal-head{
+      padding:24px 28px 20px;border-bottom:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+      position:sticky;top:0;background:var(--surface-1);z-index:2;border-radius:var(--r-xl) var(--r-xl) 0 0;
+    }
+    .modal-head h3{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.3;margin-bottom:6px}
+    .modal-head .subtitle{font-size:13px;color:var(--text-3);line-height:1.5}
+    .modal-tag{
+      display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;
+      letter-spacing:.06em;padding:6px 10px;border-radius:6px;margin-bottom:12px;
+    }
+    .modal-tag.critical{background:var(--rose);color:#fff}
+    .modal-tag.warning{background:var(--accent-2);color:#0a0a0a}
+    .modal-close{
+      width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--border);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);
+      transition:.2s var(--ease);flex-shrink:0;
+    }
+    .modal-close:hover{background:rgba(255,255,255,.10);color:var(--text-1);transform:rotate(90deg)}
+    .modal-body{padding:24px 28px}
+    .modal-body h4{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);margin:24px 0 10px}
+    .modal-body h4:first-child{margin-top:0}
+    .modal-body p{font-size:14px;color:var(--text-2);line-height:1.7}
+    .modal-body p strong{color:var(--text-1);font-weight:600}
+    .modal-steps{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+    .modal-step{
+      display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:flex-start;
+      padding:14px 16px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-md);
+    }
+    .modal-step-num{
+      width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;flex-shrink:0;
+      box-shadow:0 4px 12px rgba(255,87,34,.3);
+    }
+    .modal-step-body h5{font-size:14px;font-weight:600;color:var(--text-1);letter-spacing:-.005em;margin-bottom:4px;line-height:1.3}
+    .modal-step-body p{font-size:13px;color:var(--text-2);line-height:1.55}
+    .modal-callout{
+      margin-top:24px;padding:16px 18px;background:linear-gradient(135deg,rgba(255,184,0,.06),rgba(255,87,34,.04));border:1px solid rgba(255,184,0,.20);border-radius:var(--r-md);
+      font-size:13px;color:var(--text-2);line-height:1.6;
+    }
+    .modal-callout::before{content:"💡 ";margin-right:4px}
+    .modal-links{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+    .modal-link{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;background:var(--text-1);color:var(--obsidian);border-radius:var(--r-md);
+      font-size:13px;font-weight:600;letter-spacing:-.005em;text-decoration:none;
+      transition:.2s var(--ease);
+    }
+    .modal-link:hover{background:#fff;transform:translateX(2px)}
+    .modal-link::after{content:"↗";font-weight:700}
     /* Print styles */
     @media print{
       body{background:#fff;color:#000}
@@ -402,20 +464,14 @@
 
         <div class="urgent-list">
           {% for a in urgent_actions %}
-          <div class="urgent-card {{ a.severity }}" {% if a.type == 'campaign' %}data-campaign-id="{{ a.target_id }}" data-account-id="{{ account.id }}"{% endif %}{% if a.type == 'post_id' %}data-post-id="{{ a.target_id }}"{% endif %}>
+          <div class="urgent-card {{ a.severity }}" data-urgent-idx="{{ loop.index0 }}">
             <div class="urgent-action-tag {{ a.severity }}">{{ a.action }}</div>
             <div class="urgent-body">
               <h4>{{ a.target_name }}</h4>
               <div class="reason">{{ a.reason }}</div>
               <div class="impact">{{ a.impact }}</div>
             </div>
-            {% if a.type == 'campaign' %}
-              <a class="urgent-go" href="https://business.facebook.com/adsmanager/manage/adsets?act={{ account.id|replace('act_','') }}&selected_campaign_ids={{ a.target_id }}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Abrir en Meta →</a>
-            {% elif a.type == 'tech' %}
-              <span class="urgent-go" style="background:var(--surface-3);color:var(--text-2);cursor:default">Manual</span>
-            {% else %}
-              <span class="urgent-go" style="background:var(--surface-3);color:var(--text-2)">Click para detalles</span>
-            {% endif %}
+            <span class="urgent-go">Ver detalle →</span>
           </div>
           {% endfor %}
         </div>
@@ -824,6 +880,28 @@
     </main>
   </div>
 
+  <!-- ─── Detail Modal ─── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <div class="modal-head">
+        <div style="flex:1">
+          <span class="modal-tag" id="modal-tag">CRITICAL</span>
+          <h3 id="modal-title">—</h3>
+          <p class="subtitle" id="modal-subtitle">—</p>
+        </div>
+        <button class="modal-close" id="modal-close" aria-label="Cerrar">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Embed urgent_actions data as JSON for the modal -->
+  {% if urgent_actions %}
+  <script id="urgent-data" type="application/json">{{ urgent_actions|tojson }}</script>
+  {% endif %}
+
   <script>
   (function(){
     'use strict';
@@ -892,6 +970,82 @@
         }
       });
     });
+
+    // ── Urgent action card → open modal with details ──
+    const urgentDataEl = document.getElementById('urgent-data');
+    const urgentData = urgentDataEl ? JSON.parse(urgentDataEl.textContent) : [];
+    const overlay = document.getElementById('modal-overlay');
+    const modalTag = document.getElementById('modal-tag');
+    const modalTitle = document.getElementById('modal-title');
+    const modalSubtitle = document.getElementById('modal-subtitle');
+    const modalBody = document.getElementById('modal-body');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(idx){
+      const a = urgentData[idx];
+      if (!a || !a.detail) return;
+      const sev = a.severity || 'critical';
+      modalTag.className = 'modal-tag ' + sev;
+      modalTag.textContent = a.action || 'ACCIÓN';
+      modalTitle.textContent = a.target_name || '';
+      modalSubtitle.textContent = a.reason || '';
+
+      let html = '';
+      if (a.detail.what) {
+        html += '<h4>¿Qué pasa?</h4><p>' + escapeHTML(a.detail.what) + '</p>';
+      }
+      if (a.detail.why_kill) {
+        html += '<h4>Por qué actuar</h4><p>' + escapeHTML(a.detail.why_kill) + '</p>';
+      }
+      if (a.detail.steps && a.detail.steps.length) {
+        html += '<h4>Paso a paso</h4><div class="modal-steps">';
+        a.detail.steps.forEach((s, i) => {
+          html += `<div class="modal-step">
+            <div class="modal-step-num">${i+1}</div>
+            <div class="modal-step-body">
+              <h5>${escapeHTML(s.title)}</h5>
+              <p>${escapeHTML(s.desc)}</p>
+            </div>
+          </div>`;
+        });
+        html += '</div>';
+      }
+      if (a.detail.post_action) {
+        html += '<div class="modal-callout">' + escapeHTML(a.detail.post_action) + '</div>';
+      }
+      if (a.detail.external_links && a.detail.external_links.length) {
+        html += '<h4>Acciones directas</h4><div class="modal-links">';
+        a.detail.external_links.forEach(link => {
+          html += `<a class="modal-link" href="${escapeAttr(link.url)}" target="_blank" rel="noopener">${escapeHTML(link.label)}</a>`;
+        });
+        html += '</div>';
+      }
+      modalBody.innerHTML = html;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.urgent-card[data-urgent-idx]').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.dataset.urgentIdx, 10);
+        openModal(idx);
+      });
+    });
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal(); });
+
+    function escapeHTML(s){
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escapeAttr(s){
+      return String(s ?? '').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
 
     // ── Refresh button → triggers GitHub workflow_dispatch ──
     const btnRegen = document.getElementById('btn-regen');

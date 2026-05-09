@@ -135,6 +135,68 @@
       .urgent-card{grid-template-columns:1fr;gap:10px}
       .urgent-action-tag{align-self:flex-start}
     }
+    /* ─── Detail Modal ─── */
+    .modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px;animation:overlayIn .25s var(--ease)}
+    .modal-overlay.active{display:flex}
+    @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+    .modal{
+      width:100%;max-width:720px;max-height:90vh;overflow-y:auto;
+      background:var(--surface-1);border:1px solid var(--border-lit);border-radius:var(--r-xl);
+      box-shadow:var(--shadow-xl);
+      animation:modalIn .35s var(--ease);
+    }
+    @keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+    .modal-head{
+      padding:24px 28px 20px;border-bottom:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+      position:sticky;top:0;background:var(--surface-1);z-index:2;border-radius:var(--r-xl) var(--r-xl) 0 0;
+    }
+    .modal-head h3{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.3;margin-bottom:6px}
+    .modal-head .subtitle{font-size:13px;color:var(--text-3);line-height:1.5}
+    .modal-tag{
+      display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;
+      letter-spacing:.06em;padding:6px 10px;border-radius:6px;margin-bottom:12px;
+    }
+    .modal-tag.critical{background:var(--rose);color:#fff}
+    .modal-tag.warning{background:var(--accent-2);color:#0a0a0a}
+    .modal-close{
+      width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--border);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);
+      transition:.2s var(--ease);flex-shrink:0;
+    }
+    .modal-close:hover{background:rgba(255,255,255,.10);color:var(--text-1);transform:rotate(90deg)}
+    .modal-body{padding:24px 28px}
+    .modal-body h4{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);margin:24px 0 10px}
+    .modal-body h4:first-child{margin-top:0}
+    .modal-body p{font-size:14px;color:var(--text-2);line-height:1.7}
+    .modal-body p strong{color:var(--text-1);font-weight:600}
+    .modal-steps{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+    .modal-step{
+      display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:flex-start;
+      padding:14px 16px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r-md);
+    }
+    .modal-step-num{
+      width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;flex-shrink:0;
+      box-shadow:0 4px 12px rgba(255,87,34,.3);
+    }
+    .modal-step-body h5{font-size:14px;font-weight:600;color:var(--text-1);letter-spacing:-.005em;margin-bottom:4px;line-height:1.3}
+    .modal-step-body p{font-size:13px;color:var(--text-2);line-height:1.55}
+    .modal-callout{
+      margin-top:24px;padding:16px 18px;background:linear-gradient(135deg,rgba(255,184,0,.06),rgba(255,87,34,.04));border:1px solid rgba(255,184,0,.20);border-radius:var(--r-md);
+      font-size:13px;color:var(--text-2);line-height:1.6;
+    }
+    .modal-callout::before{content:"💡 ";margin-right:4px}
+    .modal-links{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+    .modal-link{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px;background:var(--text-1);color:var(--obsidian);border-radius:var(--r-md);
+      font-size:13px;font-weight:600;letter-spacing:-.005em;text-decoration:none;
+      transition:.2s var(--ease);
+    }
+    .modal-link:hover{background:#fff;transform:translateX(2px)}
+    .modal-link::after{content:"↗";font-weight:700}
     /* Print styles */
     @media print{
       body{background:#fff;color:#000}
@@ -352,7 +414,7 @@
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span class="live-pill warn" style="font-size:10px;padding:4px 10px">unknown</span>
         </div>
-        v3.0 · Auto-generated<br>09 May 18:29
+        v3.0 · Auto-generated<br>09 May 18:40
       </div>
     </aside>
 
@@ -362,7 +424,7 @@
       <div class="topbar">
         <div class="topbar-title">
           <h1>Performance <span class="serif">command</span> center</h1>
-          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-02 → 2026-05-09 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-09 18:29</span></p>
+          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-02 → 2026-05-09 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-09 18:40</span></p>
         </div>
         <div class="topbar-actions">
           <span class="live-pill warn" data-tip="Data extraída via Meta Graph API v22.0 directamente">DATA REAL · META API</span>
@@ -394,28 +456,24 @@
 
         <div class="urgent-list">
           
-          <div class="urgent-card critical" >
+          <div class="urgent-card critical" data-urgent-idx="0">
             <div class="urgent-action-tag critical">REFRESCAR CREATIVE</div>
             <div class="urgent-body">
-              <h4>Toda la cuenta</h4>
+              <h4>Toda la cuenta — refresh masivo</h4>
               <div class="reason">Frecuencia 4.10 (target <2.5). Audiencia saturada — el creative está quemado.</div>
-              <div class="impact">Si no se rota, CPA seguirá subiendo. Hoy ya están en 4.1x exposición/persona.</div>
+              <div class="impact">Cada día sin rotar, el CPA sube ~3-5%. En 1 semana ya saltaste de 55K → 65K.</div>
             </div>
-            
-              <span class="urgent-go" style="background:var(--surface-3);color:var(--text-2)">Click para detalles</span>
-            
+            <span class="urgent-go">Ver detalle →</span>
           </div>
           
-          <div class="urgent-card warning" >
+          <div class="urgent-card warning" data-urgent-idx="1">
             <div class="urgent-action-tag warning">AUDITAR CHECKOUT</div>
             <div class="urgent-body">
               <h4>Flow Shopify ATC → Checkout</h4>
-              <div class="reason">De 4732 ATC solo 1011 llegan a checkout (79% drop).</div>
-              <div class="impact">Si esto fuera 50%, tendrías 1355 purchases más</div>
+              <div class="reason">De 4,732 ATC solo 1,011 llegan a checkout (79% drop).</div>
+              <div class="impact">Si esto fuera 50%, tendrías 1355 purchases más esta semana. Eso es revenue NO captado.</div>
             </div>
-            
-              <span class="urgent-go" style="background:var(--surface-3);color:var(--text-2);cursor:default">Manual</span>
-            
+            <span class="urgent-go">Ver detalle →</span>
           </div>
           
         </div>
@@ -2470,11 +2528,33 @@
       <!-- Footer -->
       <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px;color:var(--text-4);flex-wrap:wrap;gap:14px">
         <span>Serene · AI Performance Command Center · v3.0 — Python engine</span>
-        <span>act_1020250386264513 · Generado 2026-05-09 18:29</span>
+        <span>act_1020250386264513 · Generado 2026-05-09 18:40</span>
       </div>
 
     </main>
   </div>
+
+  <!-- ─── Detail Modal ─── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <div class="modal-head">
+        <div style="flex:1">
+          <span class="modal-tag" id="modal-tag">CRITICAL</span>
+          <h3 id="modal-title">—</h3>
+          <p class="subtitle" id="modal-subtitle">—</p>
+        </div>
+        <button class="modal-close" id="modal-close" aria-label="Cerrar">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Embed urgent_actions data as JSON for the modal -->
+  
+  <script id="urgent-data" type="application/json">[{"action": "REFRESCAR CREATIVE", "detail": {"external_links": [{"label": "Filtrar ads por frequency en Meta", "url": "https://business.facebook.com/adsmanager/manage/ads?act=\u0026columns=campaign_name%2Cdelivery%2Cresults%2Cspent%2Cfrequency"}], "post_action": "Esta es una limpieza preventiva: no est\u00e1s perdiendo dinero hoy, pero s\u00ed ma\u00f1ana si no act\u00faas. La concentraci\u00f3n de spend en pocos creatives es el riesgo #1 de Serene ahora mismo.", "steps": [{"desc": "En la secci\u00f3n \u0027Post ID Intelligence\u0027 del dashboard, los que tienen label EFFICIENT o SCALABLE. Esos angles funcionan, hay que producir variantes \u2014 NO repetir.", "title": "1. Identifica tus 3 \u00e1ngulos winners actuales"}, {"desc": "Variaciones del mismo angle: cambio de hook (primeros 3 segundos), cambio de UGC creator, cambio de B-roll, cambio de m\u00fasica. Mant\u00e9n el mensaje, var\u00eda la presentaci\u00f3n.", "title": "2. Brief 5 nuevos creatives en 24h"}, {"desc": "NO uses las mismas audiencias actuales (ya est\u00e1n saturadas). Crea adsets con LAL 1% nuevo, otra geograf\u00eda, otro inter\u00e9s. Fresh audiences = freq baja desde 1.0.", "title": "3. Lanzar en NUEVOS adsets"}, {"desc": "En Ads Manager, filtra columna Frequency \u003e3.5, selecciona todos, Bulk Action \u2192 Pause. Hace que el reach se libere para los nuevos creatives.", "title": "4. Pausar ads con freq \u003e3.5 en bulk"}, {"desc": "Los que tienen freq entre 2.5-3.5 pero todav\u00eda generan compras: b\u00e1jales budget 50% mientras los nuevos creatives toman tracci\u00f3n.", "title": "5. Reducir budget en adsets sobre-expuestos"}, {"desc": "La frecuencia debe bajar a 2.5-3.0 para confirmar que el plan funcion\u00f3. Si no, hay un problema de targeting m\u00e1s profundo.", "title": "6. Revisa en 5 d\u00edas"}], "what": "Tu audiencia est\u00e1 viendo el mismo creative 4.1 veces en promedio. La gente que iba a comprar, ya compr\u00f3. La gente que NO iba a comprar, est\u00e1 harta de ver lo mismo. Esto es la se\u00f1al #1 de que necesitas rotar.", "why_kill": "Posts a refrescar primero (los m\u00e1s sobre-expuestos): los Top Post IDs. Tambi\u00e9n revisa la secci\u00f3n \u0027Post ID Intelligence\u0027 del dashboard para ver cu\u00e1les tienen freq \u003e3."}, "impact": "Cada d\u00eda sin rotar, el CPA sube ~3-5%. En 1 semana ya saltaste de 55K \u2192 65K.", "reason": "Frecuencia 4.10 (target \u003c2.5). Audiencia saturada \u2014 el creative est\u00e1 quemado.", "score": 100, "severity": "critical", "target_id": "global", "target_name": "Toda la cuenta \u2014 refresh masivo", "type": "account"}, {"action": "AUDITAR CHECKOUT", "detail": {"external_links": [{"label": "Shopify Cart Abandonment Reports", "url": "https://admin.shopify.com/store/sereneleparfum/analytics/reports"}, {"label": "Shopify Checkout Settings", "url": "https://admin.shopify.com/store/sereneleparfum/settings/checkout"}], "post_action": "Este es el ROI m\u00e1s alto de todo el dashboard. Mejorar el checkout puede generar m\u00e1s impact que cualquier optimizaci\u00f3n de Meta. Antes de gastar m\u00e1s en ads, arregla el balde con hueco.", "steps": [{"desc": "Abre sereneleparfum.com en INC\u00d3GNITO (sin tu sesi\u00f3n guardada). Add to cart \u2192 \u00bfqu\u00e9 tan obvio es el bot\u00f3n Checkout? \u00bfHay distractions? Mide los segundos del click ATC al landing del checkout.", "title": "1. Test el flow t\u00fa mismo"}, {"desc": "70%+ del tr\u00e1fico Meta es mobile. Repite el test en celular. \u00bfEl bot\u00f3n Checkout es visible al primer scroll? \u00bfHay sticky CTA?", "title": "2. Test mobile vs desktop"}, {"desc": "El #1 abandono de checkout es el shipping cost que aparece tarde. En Shopify Settings \u2192 Shipping, \u00bfel costo se calcula en el cart o solo en checkout? Pre-calcular = menos abandono.", "title": "3. Revisa costos sorpresa"}, {"desc": "Shopify Settings \u2192 Checkout \u2192 activa Apple Pay, Google Pay, Shop Pay. Esos one-click reducen abandonment 20-30%.", "title": "4. Activa Express Checkout"}, {"desc": "Si tu cart page tiene formulario de descuento prominente, mueve eso al checkout. Cart debe ser \"ver carrito + 1 bot\u00f3n gigante\".", "title": "5. Reduce campos en cart page"}, {"desc": "Reports \u2192 Cart abandonment. Te dice EXACTAMENTE en qu\u00e9 paso se van. Esa data es oro.", "title": "6. Mira Shopify analytics"}, {"desc": "Activa Shopify Cart Abandonment Email (Settings \u2192 Notifications). Un solo email recupera 5-10% de los abandonos. Gratis.", "title": "7. Email recovery"}], "what": "Tu funnel pierde 79% de la gente que ya a\u00f1adi\u00f3 al carrito. 4,732 personas dijeron \u0027s\u00ed lo quiero\u0027 pero solo 1,011 llegaron al paso de pagar. El problema NO est\u00e1 en Meta (la gente est\u00e1 calificada) \u2014 est\u00e1 en Shopify entre el bot\u00f3n \"Add to Cart\" y el \"Checkout\".", "why_kill": "Si llevas tu drop de 79% a un 50% (est\u00e1ndar industry e-commerce), recuperas ~1355 compras semanales \u00d7 55K CPA promedio = ~74.45M COP/semana adicionales."}, "impact": "Si esto fuera 50%, tendr\u00edas 1355 purchases m\u00e1s esta semana. Eso es revenue NO captado.", "reason": "De 4,732 ATC solo 1,011 llegan a checkout (79% drop).", "score": 70, "severity": "warning", "target_id": "shopify", "target_name": "Flow Shopify ATC \u2192 Checkout", "type": "tech"}]</script>
+  
 
   <script>
   (function(){
@@ -2544,6 +2624,82 @@
         }
       });
     });
+
+    // ── Urgent action card → open modal with details ──
+    const urgentDataEl = document.getElementById('urgent-data');
+    const urgentData = urgentDataEl ? JSON.parse(urgentDataEl.textContent) : [];
+    const overlay = document.getElementById('modal-overlay');
+    const modalTag = document.getElementById('modal-tag');
+    const modalTitle = document.getElementById('modal-title');
+    const modalSubtitle = document.getElementById('modal-subtitle');
+    const modalBody = document.getElementById('modal-body');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(idx){
+      const a = urgentData[idx];
+      if (!a || !a.detail) return;
+      const sev = a.severity || 'critical';
+      modalTag.className = 'modal-tag ' + sev;
+      modalTag.textContent = a.action || 'ACCIÓN';
+      modalTitle.textContent = a.target_name || '';
+      modalSubtitle.textContent = a.reason || '';
+
+      let html = '';
+      if (a.detail.what) {
+        html += '<h4>¿Qué pasa?</h4><p>' + escapeHTML(a.detail.what) + '</p>';
+      }
+      if (a.detail.why_kill) {
+        html += '<h4>Por qué actuar</h4><p>' + escapeHTML(a.detail.why_kill) + '</p>';
+      }
+      if (a.detail.steps && a.detail.steps.length) {
+        html += '<h4>Paso a paso</h4><div class="modal-steps">';
+        a.detail.steps.forEach((s, i) => {
+          html += `<div class="modal-step">
+            <div class="modal-step-num">${i+1}</div>
+            <div class="modal-step-body">
+              <h5>${escapeHTML(s.title)}</h5>
+              <p>${escapeHTML(s.desc)}</p>
+            </div>
+          </div>`;
+        });
+        html += '</div>';
+      }
+      if (a.detail.post_action) {
+        html += '<div class="modal-callout">' + escapeHTML(a.detail.post_action) + '</div>';
+      }
+      if (a.detail.external_links && a.detail.external_links.length) {
+        html += '<h4>Acciones directas</h4><div class="modal-links">';
+        a.detail.external_links.forEach(link => {
+          html += `<a class="modal-link" href="${escapeAttr(link.url)}" target="_blank" rel="noopener">${escapeHTML(link.label)}</a>`;
+        });
+        html += '</div>';
+      }
+      modalBody.innerHTML = html;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.urgent-card[data-urgent-idx]').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.dataset.urgentIdx, 10);
+        openModal(idx);
+      });
+    });
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal(); });
+
+    function escapeHTML(s){
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escapeAttr(s){
+      return String(s ?? '').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
 
     // ── Refresh button → triggers GitHub workflow_dispatch ──
     const btnRegen = document.getElementById('btn-regen');

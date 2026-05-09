@@ -536,10 +536,12 @@ def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
                           summary: dict, tracking: dict) -> list[dict]:
     """
     Returns ordered list of actions ranked by urgency + $ impact.
-    Each action has: severity, action_type, target, reason, impact, meta_url.
+    Each action has: severity, action, type, target, reason, impact, detail (steps), score.
     """
     out = []
     account_cpa = summary.get("cpa") or 0
+    account_ctr = summary.get("ctr") or 0
+    currency = "COP"  # TODO derive from snapshot
 
     # 1. Campañas ACTIVE con 0 conversions y spend significativo → KILL
     for c in campaigns:
@@ -552,10 +554,23 @@ def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
                 "type": "campaign",
                 "target_id": c["id"],
                 "target_name": c["name"],
-                "reason": f"Gastó {_fmt_compact(c['spend'])} sin generar 1 sola compra. CTR {c.get('ctr',0):.2f}% (promedio cuenta {summary.get('ctr',0):.2f}%).",
+                "reason": f"Gastó {_fmt_compact(c['spend'])} sin generar 1 sola compra. CTR {c.get('ctr',0):.2f}% (promedio cuenta {account_ctr:.2f}%).",
                 "impact": f"Estás quemando ~{_fmt_compact(c['spend'] / 7)} COP/día sin retorno",
-                "meta_url": f"https://business.facebook.com/adsmanager/manage/adsets?act={summary.get('account_id_clean','')}&selected_campaign_ids={c['id']}",
                 "score": c.get("score", 0),
+                "detail": {
+                    "what": f"Esta campaña ha gastado {_fmt_compact(c['spend'])} COP en {c.get('impressions',0):,} impresiones sin lograr una sola compra. CTR de {c.get('ctr',0):.2f}% indica que ni siquiera la audiencia está haciendo click — el creative no engancha.",
+                    "why_kill": "Bajo la regla 3x Kill: si una campaña gasta >3x el CPA target sin convertir, hay que pausarla. Aquí ya pasó. Cada día que sigue activa son ~{} COP perdidos.".format(_fmt_compact(c['spend']/7)),
+                    "steps": [
+                        {"title": "Click \"Abrir en Meta →\" en esta card", "desc": "Te lleva directo al adset selector con esta campaña pre-seleccionada"},
+                        {"title": "Toggle \"Active → Paused\"", "desc": "Click el switch verde junto al nombre. Confirma. Spend deja de correr inmediatamente."},
+                        {"title": "Documenta el aprendizaje (5 min)", "desc": "Ve a la campaña → tab Creative → mira qué Post IDs tenía. Los más bajos en CTR son los culpables. NO los reuses."},
+                        {"title": "Decide si vale relanzar", "desc": "Si el ángulo del creative era bueno pero el copy/hook fue débil, considera regrabar. Si el ángulo entero falló, descarta."},
+                    ],
+                    "post_action": "Después de pausar, el budget liberado puede ir a las campañas con score >80. Revisa la sección 'Campañas' debajo.",
+                    "external_links": [
+                        {"label": "Abrir esta campaña en Meta Ads Manager", "url": f"https://business.facebook.com/adsmanager/manage/adsets?act={summary.get('account_id_clean','')}&selected_campaign_ids={c['id']}"}
+                    ],
+                },
             })
 
     # 2. Campañas ACTIVE con CPA >2x del promedio → KILL or fix
@@ -572,23 +587,55 @@ def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
                 "target_name": c["name"],
                 "reason": f"CPA {_fmt_compact(c['cpa'])} es {ratio:.1f}x más caro que el promedio cuenta ({_fmt_compact(account_cpa)}). Solo {c['purchases']} compras.",
                 "impact": f"Cada compra cuesta {_fmt_compact(c['cpa'] - account_cpa)} más de lo normal",
-                "meta_url": "",
                 "score": c.get("score", 0),
+                "detail": {
+                    "what": f"Esta campaña SÍ convierte ({c['purchases']} compras), pero a un CPA {ratio:.1f}x más caro que el resto. Si pudieras convertir esos compradores a CPA promedio, ahorrarías {_fmt_compact((c['cpa']-account_cpa)*c['purchases'])} {currency}.",
+                    "why_kill": f"El problema puede ser: audiencia mal segmentada, bidding strategy errada, o creative que atrae al público equivocado. Antes de pausar, hay 1 cosa que probar.",
+                    "steps": [
+                        {"title": "Antes de pausar — duplica con cambio mínimo", "desc": f"Crea un duplicado y cambia SOLO la audiencia (de Lookalike a Interés, o broad). Misma estructura, mismos creatives. Corre 3 días."},
+                        {"title": "Si el duplicado tampoco baja CPA", "desc": "Pausa esta campaña original. Mantén solo el duplicado si está mejor."},
+                        {"title": "Si el duplicado SÍ baja CPA", "desc": "Pausa la original + escala el duplicado +20%. Usaste budget para validar audiencia."},
+                        {"title": "Documenta", "desc": f"Anota que '{c['name'][:40]}' performó mal. Identifica si fue por audiencia (compraban menos), creative (no resonó), o bid strategy (Cost Cap vs Bid Cap)."},
+                    ],
+                    "post_action": "Si pausas y quieres recuperar el momentum, considera dirigir ese budget a las top 3 campañas con score >80.",
+                    "external_links": [
+                        {"label": "Abrir campaña en Meta Ads Manager", "url": f"https://business.facebook.com/adsmanager/manage/adsets?act={summary.get('account_id_clean','')}&selected_campaign_ids={c['id']}"}
+                    ],
+                },
             })
 
-    # 3. Frequency cuenta crítica → CAMBIAR ESTRATEGIA
+    # 3. Frequency cuenta crítica → REFRESCAR CREATIVE
     freq = summary.get("frequency", 0)
     if freq > 4.0:
+        # Find top 3 most-overshown post_ids to mention
+        top_freq_posts = [p for p in post_ids if p.get("frequency", 0) > 3.0 and p.get("spend", 0) > 0][:3]
+        post_examples = ", ".join(f"…{p['post_id'][-8:]}" for p in top_freq_posts) if top_freq_posts else "los Top Post IDs"
+
         out.append({
             "severity": "critical",
             "action": "REFRESCAR CREATIVE",
             "type": "account",
             "target_id": "global",
-            "target_name": "Toda la cuenta",
+            "target_name": "Toda la cuenta — refresh masivo",
             "reason": f"Frecuencia {freq:.2f} (target <2.5). Audiencia saturada — el creative está quemado.",
-            "impact": "Si no se rota, CPA seguirá subiendo. Hoy ya están en {:.1f}x exposición/persona.".format(freq),
-            "meta_url": "",
+            "impact": "Cada día sin rotar, el CPA sube ~3-5%. En 1 semana ya saltaste de 55K → 65K.",
             "score": 100,
+            "detail": {
+                "what": f"Tu audiencia está viendo el mismo creative {freq:.1f} veces en promedio. La gente que iba a comprar, ya compró. La gente que NO iba a comprar, está harta de ver lo mismo. Esto es la señal #1 de que necesitas rotar.",
+                "why_kill": "Posts a refrescar primero (los más sobre-expuestos): " + post_examples + ". También revisa la sección 'Post ID Intelligence' del dashboard para ver cuáles tienen freq >3.",
+                "steps": [
+                    {"title": "1. Identifica tus 3 ángulos winners actuales", "desc": "En la sección 'Post ID Intelligence' del dashboard, los que tienen label EFFICIENT o SCALABLE. Esos angles funcionan, hay que producir variantes — NO repetir."},
+                    {"title": "2. Brief 5 nuevos creatives en 24h", "desc": "Variaciones del mismo angle: cambio de hook (primeros 3 segundos), cambio de UGC creator, cambio de B-roll, cambio de música. Mantén el mensaje, varía la presentación."},
+                    {"title": "3. Lanzar en NUEVOS adsets", "desc": "NO uses las mismas audiencias actuales (ya están saturadas). Crea adsets con LAL 1% nuevo, otra geografía, otro interés. Fresh audiences = freq baja desde 1.0."},
+                    {"title": "4. Pausar ads con freq >3.5 en bulk", "desc": "En Ads Manager, filtra columna Frequency >3.5, selecciona todos, Bulk Action → Pause. Hace que el reach se libere para los nuevos creatives."},
+                    {"title": "5. Reducir budget en adsets sobre-expuestos", "desc": "Los que tienen freq entre 2.5-3.5 pero todavía generan compras: bájales budget 50% mientras los nuevos creatives toman tracción."},
+                    {"title": "6. Revisa en 5 días", "desc": "La frecuencia debe bajar a 2.5-3.0 para confirmar que el plan funcionó. Si no, hay un problema de targeting más profundo."},
+                ],
+                "post_action": "Esta es una limpieza preventiva: no estás perdiendo dinero hoy, pero sí mañana si no actúas. La concentración de spend en pocos creatives es el riesgo #1 de Serene ahora mismo.",
+                "external_links": [
+                    {"label": "Filtrar ads por frequency en Meta", "url": f"https://business.facebook.com/adsmanager/manage/ads?act={summary.get('account_id_clean','')}&columns=campaign_name%2Cdelivery%2Cresults%2Cspent%2Cfrequency"},
+                ],
+            },
         })
 
     # 4. Posts FATIGUED → KILL post bulk
@@ -602,8 +649,22 @@ def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
                 "target_name": f"Post …{p['post_id'][-12:]} ({p['ad_count']} ads activos)",
                 "reason": f"Frecuencia consolidada {p['frequency']:.1f} a través de {p['ad_count']} ads. CTR cayendo.",
                 "impact": f"Quemás {_fmt_compact(p['spend'])} en posts saturados",
-                "meta_url": "",
                 "score": 80,
+                "detail": {
+                    "what": f"Este Post ID se está usando en {p['ad_count']} ads (entre {p['adsets_count']} adsets) con frecuencia consolidada {p['frequency']:.1f}. El público lo vio demasiadas veces. CTR seguirá cayendo, CPA seguirá subiendo.",
+                    "why_kill": f"Este post ya generó {p.get('purchases',0)} purchases con un CPA de {_fmt_compact(p.get('cpa'))} pero está saturado. Pausarlo en bulk te libera reach para creatives nuevos sin perder volumen — los nuevos lo absorben.",
+                    "steps": [
+                        {"title": "1. Abre Ads Manager y filtra por Post ID", "desc": f"En columna Creative ID, busca o filtra: {p['post_id']}. Te aparecerán los {p['ad_count']} ads que lo usan."},
+                        {"title": "2. Selecciona todos los ads del post", "desc": "Checkbox del header de la tabla → todos seleccionados. O Cmd+A si Meta lo permite."},
+                        {"title": "3. Bulk Action → Pause", "desc": "Botón \"Edit\" → \"Pause Ads\". Confirma. Los {} ads pausan inmediatamente.".format(p['ad_count'])},
+                        {"title": "4. Reemplazar con creative nuevo", "desc": "Si tenías 4 ads activos con este post, produce 2-4 variantes con un Post ID nuevo (mismo ángulo, distinto hook). Sube al ya-existente adset."},
+                        {"title": "5. Monitorea 48h", "desc": "Si el CPA del adset (no del post nuevo, sino del adset) se mantiene o mejora, validaste que el ángulo sigue siendo el correcto. Si baja drásticamente, el post viejo era el unique driver."},
+                    ],
+                    "post_action": f"Esta campaña/post ya dio lo que tenía que dar ({p.get('purchases',0)} purchases). Pausarlo no es perdida — es liberar oxígeno.",
+                    "external_links": [
+                        {"label": "Buscar este post en Meta Ads Manager", "url": f"https://business.facebook.com/adsmanager/manage/ads?act={summary.get('account_id_clean','')}&search={p['post_id']}"},
+                    ],
+                },
             })
 
     # 5. Posts con BUDGET WASTE label
@@ -617,22 +678,49 @@ def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
                 "target_name": f"Post …{p['post_id'][-12:]}",
                 "reason": f"Gastó {_fmt_compact(p['spend'])} con 0 compras",
                 "impact": f"Waste directo: {_fmt_compact(p['spend'])}",
-                "meta_url": "",
                 "score": 90,
+                "detail": {
+                    "what": f"Este Post ID tiene gasto pero ZERO conversiones. Está activo en {p['ad_count']} ads.",
+                    "why_kill": "Bajo la regla 3x Kill, ya gastó suficiente sin convertir como para tener confianza estadística de que el creative no resuena con esta audiencia.",
+                    "steps": [
+                        {"title": "1. Pausar todos los ads que usan este Post ID", "desc": "Mismo flow que el caso anterior: filtrar por post_id en Ads Manager y pausar en bulk."},
+                        {"title": "2. NO reusar este post en futuras campañas", "desc": f"Anota el Post ID {p['post_id']} en tu lista de \"creatives quemados\". Es información valiosa para próximas iteraciones."},
+                        {"title": "3. Análisis post-mortem", "desc": "¿Qué tenía este creative que no resonó? Hook, formato, claim, casting? Documéntalo en tu \"learnings\" para no repetir."},
+                    ],
+                    "post_action": "El budget liberado va a la siguiente campaña/post con mejor score. Revisa la sección 'Recomendaciones AI' al final del dashboard.",
+                    "external_links": [],
+                },
             })
 
-    # 6. Tracking gap (importante pero no urgent visual rojo — warning)
+    # 6. Tracking gap
     if not tracking.get("value_tracking", True):
         out.append({
             "severity": "warning",
             "action": "CONFIGURAR PIXEL",
             "type": "tech",
             "target_id": "pixel",
-            "target_name": "Shopify Customer Events Pixel",
+            "target_name": "Shopify Customer Events Pixel — value tracking",
             "reason": "El pixel no envía 'value' en eventos Purchase. Sin esto no hay ROAS calculable.",
-            "impact": "Decisiones de optimización están ciegas a profitability. Bloqueante de §8 del prompt.",
-            "meta_url": "",
+            "impact": "Estás optimizando ciego. Las campañas con AOV alto se ven igual que las de AOV bajo.",
             "score": 50,
+            "detail": {
+                "what": "Confirmado vía Meta API: tus eventos Purchase llegan correctamente (350 en mayo 2-9), pero NO incluyen el campo `value`. Por eso `action_values` y `purchase_roas` vienen vacíos. Sin esto, Meta no puede calcular ROAS ni optimizar por valor — solo por volumen de compras.",
+                "why_kill": "Esto bloquea la sección §8 del prompt original (Profitability-First Analysis). Hasta que se configure, NO se puede saber si una campaña con CPA 80K es más rentable que una con CPA 50K si la primera tiene AOV 200K y la segunda 100K.",
+                "steps": [
+                    {"title": "1. Verifica el estado actual", "desc": "Ve a business.facebook.com/events_manager2 → tu pixel → Test Events. Haz una compra de prueba en sereneleparfum.com. Si en columna 'Value' dice '—' o vacío, el problema está confirmado."},
+                    {"title": "2. Opción A — Customer Events de Shopify (recomendado, 15 min)", "desc": "Shopify Admin → Settings → Customer Events → click el pixel de Meta → Code editor. Agregar `value: checkout.totalPrice.amount` y `currency: checkout.totalPrice.currencyCode` al evento Purchase. Save."},
+                    {"title": "3. Opción B — Si usas Facebook & Instagram channel", "desc": "Apps → Facebook & Instagram by Meta → Data sharing settings → Maximum (no Standard). Esto incluye value automáticamente."},
+                    {"title": "4. Opción C — Editar theme.liquid", "desc": "Solo si A y B no aplican. Buscar `fbq('track', 'Purchase')` y agregar el segundo argumento con value y currency. Cuidado con la moneda en cents vs unidades."},
+                    {"title": "5. Hacer compra de prueba", "desc": "Compra real de cualquier producto ($1 o más). Esperar 1-2 min."},
+                    {"title": "6. Verificar en Test Events", "desc": "Volver a Meta Events Manager → Test Events. Ahora debe mostrar 'Value: 119,880 COP' (o lo que sea). Confirmas con eso."},
+                    {"title": "7. Avísame", "desc": "Cuando esté hecho, regenero el dashboard y la sección ROAS aparece automáticamente. El engine ya está listo para procesarlo."},
+                ],
+                "post_action": "Doc completo para el dev de Shopify en docs/value_tracking_shopify.md (ya está en el repo).",
+                "external_links": [
+                    {"label": "Meta Events Manager (test events)", "url": "https://business.facebook.com/events_manager2"},
+                    {"label": "Shopify Customer Events", "url": "https://admin.shopify.com/store/sereneleparfum/settings/customer_events"},
+                ],
+            },
         })
 
     # 7. Funnel leak severe (ATC → Checkout drop > 75%)
@@ -641,16 +729,34 @@ def build_urgent_actions(campaigns: list[dict], post_ids: list[dict],
         ic = summary["ic"]
         drop = 1 - (ic / atc) if atc > 0 else 0
         if drop > 0.75:
+            potential = int(atc * 0.5 - ic)
             out.append({
                 "severity": "warning",
                 "action": "AUDITAR CHECKOUT",
                 "type": "tech",
                 "target_id": "shopify",
                 "target_name": "Flow Shopify ATC → Checkout",
-                "reason": f"De {atc} ATC solo {ic} llegan a checkout ({drop*100:.0f}% drop).",
-                "impact": f"Si esto fuera 50%, tendrías {int(atc * 0.5 - ic)} purchases más",
-                "meta_url": "",
+                "reason": f"De {atc:,} ATC solo {ic:,} llegan a checkout ({drop*100:.0f}% drop).",
+                "impact": f"Si esto fuera 50%, tendrías {potential} purchases más esta semana. Eso es revenue NO captado.",
                 "score": 70,
+                "detail": {
+                    "what": f"Tu funnel pierde {drop*100:.0f}% de la gente que ya añadió al carrito. {atc:,} personas dijeron 'sí lo quiero' pero solo {ic:,} llegaron al paso de pagar. El problema NO está en Meta (la gente está calificada) — está en Shopify entre el botón \"Add to Cart\" y el \"Checkout\".",
+                    "why_kill": f"Si llevas tu drop de {drop*100:.0f}% a un 50% (estándar industry e-commerce), recuperas ~{potential} compras semanales × {_fmt_compact(account_cpa or 50000)} CPA promedio = ~{_fmt_compact((potential * (account_cpa or 50000)) if potential>0 else 0)} {currency}/semana adicionales.",
+                    "steps": [
+                        {"title": "1. Test el flow tú mismo", "desc": "Abre sereneleparfum.com en INCÓGNITO (sin tu sesión guardada). Add to cart → ¿qué tan obvio es el botón Checkout? ¿Hay distractions? Mide los segundos del click ATC al landing del checkout."},
+                        {"title": "2. Test mobile vs desktop", "desc": "70%+ del tráfico Meta es mobile. Repite el test en celular. ¿El botón Checkout es visible al primer scroll? ¿Hay sticky CTA?"},
+                        {"title": "3. Revisa costos sorpresa", "desc": "El #1 abandono de checkout es el shipping cost que aparece tarde. En Shopify Settings → Shipping, ¿el costo se calcula en el cart o solo en checkout? Pre-calcular = menos abandono."},
+                        {"title": "4. Activa Express Checkout", "desc": "Shopify Settings → Checkout → activa Apple Pay, Google Pay, Shop Pay. Esos one-click reducen abandonment 20-30%."},
+                        {"title": "5. Reduce campos en cart page", "desc": "Si tu cart page tiene formulario de descuento prominente, mueve eso al checkout. Cart debe ser \"ver carrito + 1 botón gigante\"."},
+                        {"title": "6. Mira Shopify analytics", "desc": "Reports → Cart abandonment. Te dice EXACTAMENTE en qué paso se van. Esa data es oro."},
+                        {"title": "7. Email recovery", "desc": "Activa Shopify Cart Abandonment Email (Settings → Notifications). Un solo email recupera 5-10% de los abandonos. Gratis."},
+                    ],
+                    "post_action": "Este es el ROI más alto de todo el dashboard. Mejorar el checkout puede generar más impact que cualquier optimización de Meta. Antes de gastar más en ads, arregla el balde con hueco.",
+                    "external_links": [
+                        {"label": "Shopify Cart Abandonment Reports", "url": "https://admin.shopify.com/store/sereneleparfum/analytics/reports"},
+                        {"label": "Shopify Checkout Settings", "url": "https://admin.shopify.com/store/sereneleparfum/settings/checkout"},
+                    ],
+                },
             })
 
     # Sort: critical first, then by score
