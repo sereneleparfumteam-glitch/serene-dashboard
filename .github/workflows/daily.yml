@@ -1,0 +1,61 @@
+name: Daily Dashboard Refresh
+
+on:
+  schedule:
+    # Daily at 7am Bogotá (UTC-5) → 12:00 UTC
+    - cron: '0 12 * * *'
+  workflow_dispatch:  # manual trigger button
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline (extract + analyze + render)
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          # Optional notification backends
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Extract production data (last 7 days)
+          UNTIL=$(date -u +%Y-%m-%d)
+          SINCE=$(date -u -d "7 days ago" +%Y-%m-%d)
+          python3 extract.py act_1020250386264513 --since $SINCE --until $UNTIL --out latest.json
+
+          # Analyze + render → output/
+          python3 main.py latest.json
+
+          # Move latest HTML to public/index.html (Vercel root)
+          mkdir -p public
+          cp output/dashboard_*.html public/index.html
+
+          # Notify (best-effort)
+          python3 notify.py --snapshot latest.json --drive-link "https://${{ github.repository_owner }}.vercel.app" || true
+
+      - name: Commit & push
+        run: |
+          git config user.name "Serene Dashboard Bot"
+          git config user.email "bot@sereneleparfum.team"
+          git add public/index.html
+          if ! git diff --staged --quiet; then
+            git commit -m "auto: dashboard refresh $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No changes — skipping commit"
+          fi

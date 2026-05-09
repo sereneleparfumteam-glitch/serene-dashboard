@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────
+# Serene AI Dashboard · crontab template
+#
+# Instalación:
+#   crontab -e   # editar crontab del usuario actual
+#   # Pegar las líneas de abajo, ajustando paths y env vars
+#
+# O importar directo:
+#   crontab cron/crontab.template
+#
+# Probar manualmente antes de poner en cron:
+#   cd /root/serene-dashboard && ./run_full.sh
+# ─────────────────────────────────────────────────────────────
+
+# Variables de entorno (NO usar quotes en crontab)
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Si .env existe en el proyecto, run_full.sh lo carga automáticamente.
+# Alternativamente, declarar aquí (no recomendado por seguridad):
+# META_ACCESS_TOKEN=EAA...
+
+# ─────── Daily run @ 7am ───────
+# Generar dashboard de producción (last 7d) cada mañana a las 7am
+0 7 * * *   cd /root/serene-dashboard && ./run_full.sh act_1020250386264513 7 >> logs/cron.log 2>&1
+
+# ─────── Weekly run @ Monday 6am (last 30d) ───────
+# Reporte mensual rolling cada lunes
+0 6 * * 1   cd /root/serene-dashboard && ./run_full.sh act_1020250386264513 30 >> logs/cron.log 2>&1
+
+# ─────── Hourly check (opcional, sin upload) ───────
+# Refresh local cada hora — sin Drive upload — para verificar drift
+# 0 * * * *   cd /root/serene-dashboard && SKIP_UPLOAD=1 SKIP_NOTIFY=1 ./run_full.sh >> logs/cron-hourly.log 2>&1

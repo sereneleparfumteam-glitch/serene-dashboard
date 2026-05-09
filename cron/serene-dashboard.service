@@ -1,0 +1,25 @@
+# Systemd service alternative to cron
+# Install:
+#   sudo cp cron/serene-dashboard.service /etc/systemd/system/
+#   sudo cp cron/serene-dashboard.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now serene-dashboard.timer
+#   sudo systemctl status serene-dashboard.timer
+
+[Unit]
+Description=Serene AI Dashboard daily generation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/serene-dashboard
+EnvironmentFile=/root/serene-dashboard/.env
+ExecStart=/root/serene-dashboard/run_full.sh act_1020250386264513 7
+StandardOutput=append:/root/serene-dashboard/logs/systemd.log
+StandardError=append:/root/serene-dashboard/logs/systemd.log
+User=root
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+
+# Env / secrets — NUNCA commitear
+.env
+.env.local
+.env.*.local
+
+# Generated data (snapshots cambian diario, no commitear)
+data/*.json
+!data/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# Output (generado automáticamente, solo public/index.html va al repo)
+output/
+!output/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Temp
+/tmp/
+*.tmp

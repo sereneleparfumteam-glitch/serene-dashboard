@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serene · AI Performance — {{ account.name }}</title>
+  <meta name="theme-color" content="#050505" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:15px}
+    body{font-family:'Inter Tight',system-ui,sans-serif;background:var(--obsidian);color:var(--text-1);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11","tnum";letter-spacing:-.011em;line-height:1.5;overflow-x:hidden}
+    img,svg{display:block;max-width:100%}
+    a{color:inherit;text-decoration:none}
+    button{background:none;border:0;cursor:pointer;color:inherit;font:inherit}
+    code{font-family:'JetBrains Mono',monospace;font-size:.88em}
+    ::selection{background:var(--accent);color:#fff}
+    :root{
+      --obsidian:#050505;--surface-1:#0a0a0c;--surface-2:#121214;--surface-3:#1a1a1d;
+      --border:rgba(255,255,255,.06);--border-lit:rgba(255,255,255,.10);--border-glow:rgba(255,255,255,.18);
+      --text-1:#fafafa;--text-2:#a1a1aa;--text-3:#71717a;--text-4:#52525b;
+      --accent:#FF5722;--accent-2:#FFB800;--mint:#34d399;--rose:#f43f5e;--blue:#6366f1;--paper:#FAFAF8;
+      --grad-accent:linear-gradient(135deg,#FF5722 0%,#FFB800 100%);
+      --grad-mint:linear-gradient(135deg,#34d399 0%,#6ee7b7 100%);
+      --grad-rose:linear-gradient(135deg,#f43f5e 0%,#FF5722 100%);
+      --r-md:14px;--r-lg:20px;--r-xl:28px;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+    }
+    .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+    .sidebar{position:sticky;top:0;height:100vh;background:var(--surface-1);border-right:1px solid var(--border);padding:24px 18px;display:flex;flex-direction:column;gap:18px;overflow-y:auto}
+    .sidebar-brand{display:flex;align-items:center;gap:10px;padding:6px 8px;font-weight:700;font-size:15px;letter-spacing:-.02em}
+    .sidebar-brand-mark{width:28px;height:28px;border-radius:8px;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:#fff;box-shadow:0 4px 14px rgba(255,87,34,.4)}
+    .sidebar-brand small{color:var(--text-3);font-weight:500;font-size:11px;letter-spacing:.04em}
+    .sidebar-section{display:flex;flex-direction:column;gap:2px}
+    .sidebar-section-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text-4);padding:0 8px;margin-bottom:6px}
+    .sidebar-link{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--text-2);font-size:13px;font-weight:500;cursor:pointer}
+    .sidebar-link.active{background:rgba(255,87,34,.12);color:var(--text-1);position:relative}
+    .sidebar-link.active::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;background:var(--accent);border-radius:99px}
+    .sidebar-link-icon{width:14px;height:14px;flex-shrink:0;color:var(--text-3)}
+    .sidebar-link.active .sidebar-link-icon{color:var(--accent)}
+    .sidebar-link-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--rose);color:#fff;padding:2px 6px;border-radius:99px;font-weight:700}
+    .sidebar-footer{margin-top:auto;padding:14px 10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-4)}
+    .main{padding:24px 32px 80px;min-width:0}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:32px;flex-wrap:wrap}
+    .topbar-title h1{font-size:1.875rem;font-weight:700;letter-spacing:-.025em;line-height:1.1}
+    .topbar-title h1 .serif{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--text-2)}
+    .topbar-title p{font-size:13px;color:var(--text-3);margin-top:6px}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .pill-group{display:inline-flex;background:var(--surface-1);border:1px solid var(--border);border-radius:99px;padding:3px}
+    .pill-toggle{padding:7px 14px;border-radius:99px;font-size:12px;font-weight:600;color:var(--text-3);letter-spacing:-.005em}
+    .pill-toggle.active{background:var(--surface-3);color:var(--text-1)}
+    .live-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:99px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.20);font-size:11px;font-weight:600;color:var(--mint);letter-spacing:.04em;text-transform:uppercase}
+    .live-pill.warn{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.25);color:var(--accent-2)}
+    .live-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse 2.4s var(--ease) infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+    .section{margin-bottom:48px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px;flex-wrap:wrap}
+    .section-head h2{font-size:18px;font-weight:700;letter-spacing:-.018em}
+    .section-head h2 small{color:var(--text-3);font-weight:500;margin-left:8px;font-size:13px}
+    .section-meta{font-size:12px;color:var(--text-3)}
+    .mono-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .kpi-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;position:relative;overflow:hidden}
+    .kpi-card-spark{position:absolute;right:14px;top:14px;width:90px;height:36px;opacity:.7}
+    .kpi-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+    .kpi-card-num{font-weight:800;font-size:36px;line-height:1;letter-spacing:-.03em;margin-bottom:10px;font-feature-settings:"tnum"}
+    .kpi-card-num small{font-size:.55em;color:var(--text-3);font-weight:500;margin-left:2px}
+    .kpi-delta{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600}
+    .kpi-delta-up{background:rgba(52,211,153,.10);color:var(--mint)}
+    .kpi-delta-down{background:rgba(244,63,94,.10);color:var(--rose)}
+    .kpi-delta-neutral{background:rgba(255,255,255,.05);color:var(--text-3)}
+    .kpi-delta-warn{background:rgba(255,184,0,.10);color:var(--accent-2)}
+    .kpi-card-foot{font-size:11px;color:var(--text-4);margin-top:8px}
+    .account-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .account-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;position:relative}
+    .account-card-status{position:absolute;top:18px;right:18px;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .account-card-status.live{background:rgba(52,211,153,.10);color:var(--mint)}
+    .account-card-status.dormant{background:rgba(255,255,255,.04);color:var(--text-3)}
+    .account-card-status.pending{background:rgba(244,63,94,.10);color:var(--rose)}
+    .account-card-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);margin-bottom:4px;letter-spacing:.04em}
+    .account-card-title{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px}
+    .account-card-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding-top:16px;border-top:1px solid var(--border)}
+    .account-stat-label{font-size:11px;color:var(--text-3);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+    .account-stat-value{font-weight:700;font-size:18px;letter-spacing:-.02em;font-feature-settings:"tnum"}
+    .account-stat-value small{color:var(--text-3);font-size:.65em;font-weight:500;margin-left:3px}
+    .alerts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .alert-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;position:relative;overflow:hidden}
+    .alert-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+    .alert-card.critical::before{background:var(--rose)}
+    .alert-card.warning::before{background:var(--accent-2)}
+    .alert-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+    .alert-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .alert-tag.critical{background:rgba(244,63,94,.12);color:var(--rose)}
+    .alert-tag.warning{background:rgba(255,184,0,.12);color:var(--accent-2)}
+    .alert-time{font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace}
+    .alert-title{font-size:15px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em;line-height:1.3}
+    .alert-desc{font-size:13px;color:var(--text-2);line-height:1.55;margin-bottom:16px}
+    .alert-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:14px;border-top:1px solid var(--border);margin-bottom:16px}
+    .alert-stat-label{font-size:10px;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-bottom:3px}
+    .alert-stat-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
+    .alert-stat-val.mint{color:var(--mint)}.alert-stat-val.rose{color:var(--rose)}.alert-stat-val.warning{color:var(--accent-2)}.alert-stat-val.neutral{color:var(--text-1)}
+    .alert-action{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .alert-action-text{font-size:12px;color:var(--text-2)}
+    .alert-action-text strong{color:var(--text-1);font-weight:600}
+    .campaigns-shell{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .campaigns-table{width:100%;border-collapse:collapse;font-size:13px}
+    .campaigns-table thead{background:rgba(255,255,255,.02)}
+    .campaigns-table th{text-align:left;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+    .campaigns-table th.right{text-align:right}
+    .campaigns-table td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .campaigns-table td.right{text-align:right;font-family:'JetBrains Mono',monospace;font-feature-settings:"tnum"}
+    .campaigns-table tbody tr:last-child td{border-bottom:none}
+    .camp-name{font-weight:600;color:var(--text-1);letter-spacing:-.005em}
+    .camp-meta{font-size:11px;color:var(--text-3);margin-top:2px;font-family:'JetBrains Mono',monospace}
+    .status-dot{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.04em}
+    .status-dot::before{content:"";width:8px;height:8px;border-radius:50%}
+    .status-scale::before{background:var(--mint);box-shadow:0 0 8px rgba(52,211,153,.5)}
+    .status-monitor::before{background:var(--accent-2);box-shadow:0 0 8px rgba(255,184,0,.5)}
+    .status-stop::before{background:var(--rose);box-shadow:0 0 8px rgba(244,63,94,.5)}
+    .status-scale{color:var(--mint)}.status-monitor{color:var(--accent-2)}.status-stop{color:var(--rose)}
+    .score-badge{display:inline-flex;align-items:center;gap:8px}
+    .score-bar{width:50px;height:6px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden}
+    .score-bar-fill{height:100%;border-radius:99px}
+    .score-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;width:28px;text-align:right}
+    .compare-grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .compare-totals{background:linear-gradient(135deg,rgba(255,87,34,.10) 0%,rgba(255,184,0,.06) 100%);border:1px solid rgba(255,87,34,.20);border-radius:var(--r-lg);padding:24px;margin-bottom:16px}
+    .compare-totals-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .compare-total-item h4{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+    .compare-total-item .v{font-weight:800;font-size:28px;letter-spacing:-.025em;line-height:1;font-feature-settings:"tnum"}
+    .compare-total-item .v small{font-size:.5em;color:var(--text-3);font-weight:600;margin-left:3px}
+    .compare-total-item p{font-size:11px;color:var(--text-3);margin-top:4px}
+    .compare-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .compare-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;position:relative;overflow:hidden}
+    .compare-card.primary{border-color:rgba(255,87,34,.35);box-shadow:0 0 0 1px rgba(255,87,34,.10)}
+    .compare-card.primary::before{content:"PRIMARY";position:absolute;top:14px;right:14px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--accent);background:rgba(255,87,34,.10);padding:3px 8px;border-radius:99px;border:1px solid rgba(255,87,34,.20)}
+    .compare-card-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);margin-bottom:6px;letter-spacing:.04em}
+    .compare-card-title{font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px}
+    .compare-card-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:14px;border-top:1px solid var(--border)}
+    .compare-stat-label{font-size:10px;color:var(--text-3);letter-spacing:.04em;text-transform:uppercase;font-weight:500;margin-bottom:3px}
+    .compare-stat-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;font-feature-settings:"tnum"}
+    .compare-stat-val small{font-size:.7em;color:var(--text-3);font-weight:500;margin-left:2px}
+    .compare-card-status{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+    .compare-card-status.active{background:rgba(52,211,153,.10);color:var(--mint);border:1px solid rgba(52,211,153,.20)}
+    .compare-card-status.dormant{background:rgba(255,255,255,.04);color:var(--text-3);border:1px solid var(--border)}
+    .compare-card-status::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+    .audience-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+    .audience-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px}
+    .audience-card h3{font-size:14px;font-weight:700;margin-bottom:18px;letter-spacing:-.005em;display:flex;align-items:center;gap:8px}
+    .demo-bars{display:flex;flex-direction:column;gap:12px}
+    .demo-bar{display:flex;align-items:center;gap:14px}
+    .demo-bar-label{width:110px;font-size:12px;color:var(--text-2);font-weight:500;font-family:'JetBrains Mono',monospace}
+    .demo-bar-track{flex:1;height:10px;background:rgba(255,255,255,.04);border-radius:99px;overflow:hidden;position:relative}
+    .demo-bar-fill{height:100%;border-radius:99px;transition:width .8s var(--ease)}
+    .demo-bar-fill.male{background:linear-gradient(90deg,#6366f1,#818cf8)}
+    .demo-bar-fill.female{background:linear-gradient(90deg,#FF5722,#FFB800)}
+    .demo-bar-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;width:80px;text-align:right;font-feature-settings:"tnum"}
+    .demo-bar-cpa{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-3);width:55px;text-align:right;font-weight:600}
+    .gender-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .gender-pill.male{background:rgba(99,102,241,.10);color:#818cf8;border:1px solid rgba(99,102,241,.25)}
+    .gender-pill.female{background:rgba(255,87,34,.10);color:var(--accent);border:1px solid rgba(255,87,34,.25)}
+    .placement-list{display:flex;flex-direction:column;gap:8px}
+    .placement-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.02);font-size:12px;align-items:center}
+    .placement-name{color:var(--text-2);font-family:'JetBrains Mono',monospace;font-size:11px}
+    .placement-share{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);text-align:right}
+    .placement-bar{position:absolute;left:0;top:0;bottom:0;background:rgba(99,102,241,.10);border-radius:10px}
+    .placement-row{position:relative;overflow:hidden}
+    .placement-row > *{position:relative;z-index:2}
+    .country-strip{display:flex;flex-direction:column;gap:10px}
+    .country-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+    .country-row:last-child{border-bottom:none}
+    .country-flag{font-size:18px}
+    .country-name{font-size:13px;font-weight:600}
+    .country-stat{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;text-align:right;font-feature-settings:"tnum"}
+    .audience-summary{padding:14px 18px;background:linear-gradient(135deg,rgba(255,87,34,.08),rgba(255,184,0,.04));border:1px solid rgba(255,87,34,.18);border-radius:12px;margin-top:18px;font-size:13px;color:var(--text-2);line-height:1.55}
+    .audience-summary strong{color:var(--text-1);font-weight:700}
+    @media(max-width:900px){.audience-grid{grid-template-columns:1fr}}
+    .post-list{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .post-row{display:grid;grid-template-columns:50px 64px 1fr 90px 90px 90px 100px;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);transition:.2s var(--ease)}
+    .post-row:last-child{border-bottom:none}
+    .post-row:hover{background:rgba(255,255,255,.02)}
+    .post-rank{font-family:'Instrument Serif',serif;font-style:italic;font-size:22px;color:var(--text-3);font-weight:400;text-align:center}
+    .post-rank.top{color:var(--accent-2)}
+    .post-thumb{width:48px;height:64px;border-radius:8px;background:linear-gradient(180deg,#1a1a1d,#0a0a0c);border:1px solid var(--border-lit);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-4);font-weight:700;overflow:hidden}
+    .post-thumb img{width:100%;height:100%;object-fit:cover}
+    .post-meta h4{font-weight:600;font-size:14px;margin-bottom:3px;letter-spacing:-.005em}
+    .post-meta p{font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',monospace}
+    .post-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+    .post-tag{padding:2px 7px;border-radius:99px;background:rgba(255,255,255,.04);border:1px solid var(--border);font-size:10px;color:var(--text-3);font-weight:600}
+    .post-tag.hidden-winner{background:rgba(52,211,153,.10);border-color:rgba(52,211,153,.25);color:var(--mint)}
+    .post-tag.efficient{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.15);color:var(--mint)}
+    .post-tag.scalable{background:rgba(99,102,241,.10);border-color:rgba(99,102,241,.25);color:var(--blue)}
+    .post-tag.fatigued{background:rgba(244,63,94,.10);border-color:rgba(244,63,94,.25);color:var(--rose)}
+    .post-tag.budget-waste{background:rgba(244,63,94,.10);border-color:rgba(244,63,94,.25);color:var(--rose)}
+    .post-tag.no-conversions{background:rgba(255,184,0,.06);border-color:rgba(255,184,0,.20);color:var(--accent-2)}
+    .post-tag.underperforming{background:rgba(255,184,0,.06);border-color:rgba(255,184,0,.20);color:var(--accent-2)}
+    .post-stat-num{font-family:'JetBrains Mono',monospace;font-feature-settings:"tnum";font-weight:700;font-size:14px}
+    .post-stat-label{font-size:9px;color:var(--text-4);letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-top:1px}
+    @media(max-width:900px){
+      .post-row{grid-template-columns:30px 1fr 80px;gap:10px}
+      .post-row .hide-md{display:none}
+    }
+    .recos-list{display:flex;flex-direction:column;gap:10px}
+    .reco-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 22px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px}
+    .reco-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .reco-icon.scale{background:rgba(52,211,153,.10);color:var(--mint)}
+    .reco-icon.kill{background:rgba(244,63,94,.10);color:var(--rose)}
+    .reco-icon.fatigue{background:rgba(255,184,0,.10);color:var(--accent-2)}
+    .reco-icon.duplicate{background:rgba(99,102,241,.10);color:var(--blue)}
+    .reco-icon.creative{background:rgba(255,87,34,.10);color:var(--accent)}
+    .reco-body h4{font-size:14px;font-weight:600;margin-bottom:4px;letter-spacing:-.005em}
+    .reco-body p{font-size:12px;color:var(--text-3);line-height:1.55}
+    .reco-priority{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:99px;flex-shrink:0}
+    .reco-priority.high{background:rgba(244,63,94,.12);color:var(--rose)}
+    .reco-priority.med{background:rgba(255,184,0,.12);color:var(--accent-2)}
+    .reco-priority.low{background:rgba(255,255,255,.04);color:var(--text-3)}
+    .funnel-shell{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px}
+    .funnel-bars{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;align-items:end;height:240px;margin-bottom:20px}
+    .funnel-step{display:flex;flex-direction:column;align-items:center;gap:10px;height:100%;justify-content:flex-end}
+    .funnel-rate{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);letter-spacing:.04em}
+    .funnel-bar{width:100%;border-radius:8px 8px 0 0;position:relative;display:flex;justify-content:center;padding-top:6px}
+    .funnel-bar-val{color:#fff;font-weight:700;font-size:12px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+    .funnel-step-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-2);font-weight:600;text-align:center}
+    .banner{padding:16px 20px;border-radius:14px;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--text-2);margin-bottom:32px}
+    .banner.warn{background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.20)}
+    .banner-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+    .banner.warn .banner-icon{background:rgba(255,184,0,.12);color:var(--accent-2)}
+    @media(max-width:1024px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto;flex-direction:row;overflow-x:auto;padding:14px 18px}
+      .sidebar-section-label,.sidebar-footer{display:none}
+      .kpi-grid{grid-template-columns:repeat(2,1fr)}
+      .account-compare,.alerts-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:640px){
+      .main{padding:16px 16px 80px}
+      .kpi-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-mark">S</div>
+        <div><div>Serene · AI</div><small>COMMAND CENTER</small></div>
+      </div>
+      <div class="sidebar-section">
+        <span class="sidebar-section-label">Vista</span>
+        <a class="sidebar-link active">📊 Executive</a>
+        <a class="sidebar-link">📈 Campaigns <span class="sidebar-link-badge">{{ stats.campaigns_total }}</span></a>
+        <a class="sidebar-link">🎬 Post IDs</a>
+        <a class="sidebar-link">👥 Audiences</a>
+        <a class="sidebar-link">⚠ Alerts <span class="sidebar-link-badge">{{ stats.insights_critical + stats.insights_warning }}</span></a>
+      </div>
+      <div class="sidebar-footer">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span class="live-pill warn" style="font-size:10px;padding:4px 10px">{{ account.status_label or 'snapshot' }}</span>
+        </div>
+        v3.0 · Auto-generated<br>{{ generated_at_short }}
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="topbar-title">
+          <h1>Performance <span class="serif">command</span> center</h1>
+          <p>{{ account.name }} · {{ date_range.since }} → {{ date_range.until }} · Generado {{ generated_at }}</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="live-pill warn">{{ data_source_label }}</span>
+          <div class="pill-group">
+            <button class="pill-toggle active">{{ date_range.preset|upper }}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner contextual -->
+      {% if account.status == 'dormant' %}
+      <div class="banner warn">
+        <div class="banner-icon">⚠</div>
+        <div style="flex:1">
+          <strong style="color:var(--text-1);font-weight:600">Vista preview · {{ account.status_label|capitalize }}</strong>
+          <div style="color:var(--text-3);font-size:12px;margin-top:2px">Datos reales extraídos vía Meta API. Cuando el script tenga acceso a producción, este dashboard mostrará M4 en vivo con auto-refresh diario.</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- KPI Hero -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Resumen ejecutivo <small>· {{ date_range.days }} días</small></h2>
+          <span class="section-meta"><code>{{ account.id }}</code> · {{ account.currency }}</span>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <svg class="kpi-card-spark" viewBox="0 0 90 36" fill="none" preserveAspectRatio="none">
+              <path d="M0,30 L10,28 L20,24 L30,18 L40,14 L50,10 L60,8 L70,12 L80,16 L90,22" stroke="#FF5722" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <path d="M0,30 L10,28 L20,24 L30,18 L40,14 L50,10 L60,8 L70,12 L80,16 L90,22 L90,36 L0,36 Z" fill="url(#g1)"/>
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FF5722" stop-opacity="0.3"/><stop offset="1" stop-color="#FF5722" stop-opacity="0"/></linearGradient></defs>
+            </svg>
+            <div class="kpi-card-label">SPEND TOTAL</div>
+            <div class="kpi-card-num">{{ summary.spend|fmt }}<small> {{ account.currency }}</small></div>
+            <span class="kpi-delta kpi-delta-neutral">≈ ${{ summary.spend_usd|fmt }} USD</span>
+            <div class="kpi-card-foot">{{ (summary.spend / date_range.days)|fmt }}/día promedio</div>
+          </div>
+          <div class="kpi-card">
+            <svg class="kpi-card-spark" viewBox="0 0 90 36" fill="none" preserveAspectRatio="none">
+              <path d="M0,30 L10,28 L20,22 L30,16 L40,12 L50,10 L60,8 L70,10 L80,14 L90,18" stroke="#34d399" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#34d399" stop-opacity="0.3"/><stop offset="1" stop-color="#34d399" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,30 L10,28 L20,22 L30,16 L40,12 L50,10 L60,8 L70,10 L80,14 L90,18 L90,36 L0,36 Z" fill="url(#g2)"/>
+            </svg>
+            <div class="kpi-card-label">PURCHASES</div>
+            <div class="kpi-card-num">{{ summary.purchases }}</div>
+            <span class="kpi-delta kpi-delta-up">{{ funnel.click_to_purchase|round(2) }}% click→buy</span>
+            <div class="kpi-card-foot">CR funnel completo</div>
+          </div>
+          <div class="kpi-card">
+            <svg class="kpi-card-spark" viewBox="0 0 90 36" fill="none" preserveAspectRatio="none">
+              <path d="M0,12 L10,14 L20,18 L30,22 L40,26 L50,28 L60,30 L70,28 L80,26 L90,24" stroke="#FFB800" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FFB800" stop-opacity="0.3"/><stop offset="1" stop-color="#FFB800" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,12 L10,14 L20,18 L30,22 L40,26 L50,28 L60,30 L70,28 L80,26 L90,24 L90,36 L0,36 Z" fill="url(#g3)"/>
+            </svg>
+            <div class="kpi-card-label">CPA</div>
+            <div class="kpi-card-num">{{ summary.cpa|fmt }}<small></small></div>
+            <span class="kpi-delta kpi-delta-neutral">{{ account.currency }} por compra</span>
+            <div class="kpi-card-foot">Best: {{ campaigns_best_cpa|fmt }} · Worst: {{ campaigns_worst_cpa|fmt }}</div>
+          </div>
+          <div class="kpi-card">
+            <svg class="kpi-card-spark" viewBox="0 0 90 36" fill="none" preserveAspectRatio="none">
+              <path d="M0,28 L10,26 L20,24 L30,22 L40,18 L50,14 L60,12 L70,10 L80,8 L90,6" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <defs><linearGradient id="g4" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f43f5e" stop-opacity="0.3"/><stop offset="1" stop-color="#f43f5e" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,28 L10,26 L20,24 L30,22 L40,18 L50,14 L60,12 L70,10 L80,8 L90,6 L90,36 L0,36 Z" fill="url(#g4)"/>
+            </svg>
+            <div class="kpi-card-label">FREQUENCY</div>
+            <div class="kpi-card-num">{{ summary.frequency|round(2) }}<small>x</small></div>
+            {% if summary.frequency > 4.0 %}<span class="kpi-delta kpi-delta-down">⚠ crítica</span>
+            {% elif summary.frequency > 2.5 %}<span class="kpi-delta kpi-delta-warn">⚠ saturación</span>
+            {% else %}<span class="kpi-delta kpi-delta-up">saludable</span>{% endif %}
+            <div class="kpi-card-foot">Reach {{ summary.reach|fmt }} · target freq &lt; 2.5</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Multi-Account Comparison (only when combined snapshot) -->
+      {% if comparison and comparison.accounts|length > 1 %}
+      <section class="section">
+        <div class="section-head">
+          <h2>Multi-Account Comparison <small>· {{ comparison.combined.accounts_count }} cuentas</small></h2>
+          <span class="section-meta">{{ comparison.combined.active_accounts }} active · USD blended</span>
+        </div>
+
+        <!-- Combined totals -->
+        <div class="compare-totals">
+          <div class="compare-totals-grid">
+            <div class="compare-total-item">
+              <h4>Spend Combined</h4>
+              <div class="v"><small>$</small>{{ (comparison.combined.total_spend_usd / 1000)|round(1) }}<small>K USD</small></div>
+              <p>Suma de {{ comparison.combined.accounts_count }} cuentas</p>
+            </div>
+            <div class="compare-total-item">
+              <h4>Purchases</h4>
+              <div class="v">{{ comparison.combined.total_purchases }}</div>
+              <p>Total cross-account</p>
+            </div>
+            <div class="compare-total-item">
+              <h4>Blended CPA</h4>
+              <div class="v"><small>$</small>{{ comparison.combined.blended_cpa_usd|round(2) if comparison.combined.blended_cpa_usd else '—' }}<small> USD</small></div>
+              <p>Promedio ponderado</p>
+            </div>
+            <div class="compare-total-item">
+              <h4>Blended Freq</h4>
+              <div class="v">{{ comparison.combined.weighted_frequency|round(2) }}<small>x</small></div>
+              <p>Por impressions</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Per-account cards -->
+        <div class="compare-cards">
+          {% for acc in comparison.accounts %}
+          <div class="compare-card{% if acc.id == comparison.primary_id %} primary{% endif %}">
+            <span class="compare-card-status {{ 'active' if acc.active_campaigns > 0 else 'dormant' }}">{{ acc.status }}</span>
+            <div class="compare-card-name">{{ acc.id }} · {{ acc.currency }}</div>
+            <div class="compare-card-title">{{ acc.name }}</div>
+            <div class="compare-card-stats">
+              <div>
+                <div class="compare-stat-label">Spend</div>
+                <div class="compare-stat-val">{{ acc.spend|fmt }}<small> {{ acc.currency }}</small></div>
+              </div>
+              <div>
+                <div class="compare-stat-label">Spend USD</div>
+                <div class="compare-stat-val">${{ acc.spend_usd|fmt }}</div>
+              </div>
+              <div>
+                <div class="compare-stat-label">Purchases</div>
+                <div class="compare-stat-val">{{ acc.purchases }}</div>
+              </div>
+              <div>
+                <div class="compare-stat-label">CPA</div>
+                <div class="compare-stat-val">{{ acc.cpa|fmt if acc.cpa else '—' }}<small>{% if acc.cpa %} {{ acc.currency }}{% endif %}</small></div>
+              </div>
+              <div>
+                <div class="compare-stat-label">Frequency</div>
+                <div class="compare-stat-val">{{ acc.frequency|round(2) }}<small>x</small></div>
+              </div>
+              <div>
+                <div class="compare-stat-label">CTR</div>
+                <div class="compare-stat-val">{{ acc.ctr|round(2) }}<small>%</small></div>
+              </div>
+              <div>
+                <div class="compare-stat-label">Campañas</div>
+                <div class="compare-stat-val">{{ acc.active_campaigns }}<small>/{{ acc.total_campaigns }}</small></div>
+              </div>
+              <div>
+                <div class="compare-stat-label">Periodo</div>
+                <div class="compare-stat-val" style="font-size:11px">{{ acc.date_range.since }} → {{ acc.date_range.until }}</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Funnel -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Funnel de conversión</h2>
+          <span class="section-meta">5 etapas · pixel events</span>
+        </div>
+        <div class="funnel-shell">
+          <div class="funnel-bars">
+            {% set steps = [
+              ('IMPRESSIONS', funnel.impressions, '100%', '#FF5722', 100),
+              ('CLICKS', funnel.clicks, (funnel.ctr_rate|round(2)|string ~ '%'), '#FF7B54', 18),
+              ('LANDING VIEW', funnel.lpv, (funnel.click_to_lpv|round(1)|string ~ '%'), '#FFB800', 14),
+              ('ADD TO CART', funnel.atc, (funnel.lpv_to_atc|round(1)|string ~ '%'), '#34d399', 11),
+              ('CHECKOUT', funnel.ic, (funnel.atc_to_ic|round(1)|string ~ '%'), '#10b981', 6),
+              ('PURCHASES', funnel.purchases, (funnel.ic_to_purchase|round(1)|string ~ '%'), '#6366f1', 4)
+            ] %}
+            {% for label, val, rate, color, height in steps %}
+            <div class="funnel-step">
+              <div class="funnel-rate">{{ rate }}</div>
+              <div class="funnel-bar" style="background:linear-gradient(180deg,{{ color }},{{ color }}99);height:{{ height }}%">
+                <span class="funnel-bar-val" style="{% if color in ['#FFB800','#34d399'] %}color:#0a0a0a{% endif %}">{{ val|fmt }}</span>
+              </div>
+              <div class="funnel-step-label">{{ label }}</div>
+            </div>
+            {% endfor %}
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:18px;border-top:1px solid var(--border);font-size:12px;color:var(--text-3);flex-wrap:wrap;gap:14px">
+            <span>Funnel completo · <strong style="color:var(--text-1)">Click → Purchase: {{ funnel.click_to_purchase|round(2) }}%</strong></span>
+            {% set max_drop = funnel|leak_step %}
+            {% if max_drop %}<span>Mayor leak: <strong style="color:var(--rose)">{{ max_drop.name }} ({{ max_drop.drop }}% drop)</strong></span>{% endif %}
+          </div>
+        </div>
+      </section>
+
+      <!-- Insights -->
+      {% if insights %}
+      <section class="section">
+        <div class="section-head">
+          <h2>Insights AI <small>· {{ insights|length }} detectados</small></h2>
+          <span class="section-meta">Análisis automático · pattern recognition</span>
+        </div>
+        <div class="alerts-grid">
+          {% for ins in insights %}
+          <article class="alert-card {{ ins.severity }}">
+            <div class="alert-head">
+              <span class="alert-tag {{ ins.severity }}">● {{ ins.severity|upper }} · {{ ins.type|replace('_',' ') }}</span>
+              <span class="alert-time">detectado</span>
+            </div>
+            <h3 class="alert-title">{{ ins.title }}</h3>
+            <p class="alert-desc">{{ ins.description }}</p>
+            <div class="alert-stats">
+              {% for stat in ins.stats %}
+              <div>
+                <div class="alert-stat-label">{{ stat.label }}</div>
+                <div class="alert-stat-val {{ stat.color }}">{{ stat.value }}</div>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="alert-action">
+              <div class="alert-action-text"><strong>Acción:</strong> {{ ins.action }}</div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Campaigns table -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Campañas <small>· ranked por score</small></h2>
+          <span class="section-meta">{{ stats.campaigns_total }} · {{ stats.campaigns_scale }} scale · {{ stats.campaigns_monitor }} monitor · {{ stats.campaigns_stop }} stop</span>
+        </div>
+        <div class="campaigns-shell">
+          <table class="campaigns-table">
+            <thead>
+              <tr>
+                <th>Campaña</th>
+                <th>Estado</th>
+                <th class="right">Spend</th>
+                <th class="right">Purchases</th>
+                <th class="right">CPA</th>
+                <th class="right">CTR</th>
+                <th class="right">Freq</th>
+                <th class="right">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in campaigns %}
+              <tr {% if c.status_label == 'HIDDEN WINNER' %}style="background:rgba(52,211,153,.04)"{% endif %}>
+                <td>
+                  <div class="camp-name">{% if c.status_label == 'HIDDEN WINNER' %}⭐ {% endif %}{{ c.name|truncate_smart(42) }}</div>
+                  <div class="camp-meta">ID {{ c.id }} · {{ c.objective }} · {{ c.daily_budget|fmt }} daily{% if c.format_hint %} · {{ c.format_hint|upper }}{% endif %}</div>
+                </td>
+                <td><span class="status-dot status-{{ c.status_code }}">{{ c.status_label }}</span></td>
+                <td class="right">{{ c.spend|fmt }}</td>
+                <td class="right">{% if c.purchases == 0 %}<span style="color:var(--rose)">0</span>{% else %}{{ c.purchases }}{% endif %}</td>
+                <td class="right">{% if c.cpa %}<span style="{% if c.cpa < summary.cpa * 0.7 %}color:var(--mint);font-weight:700{% elif c.cpa > summary.cpa * 1.3 %}color:var(--rose){% endif %}">{{ c.cpa|fmt }}</span>{% else %}<span style="color:var(--rose)">∞</span>{% endif %}</td>
+                <td class="right" style="{% if c.ctr > summary.ctr * 1.5 %}color:var(--mint){% elif c.ctr < summary.ctr * 0.6 %}color:var(--rose){% endif %}">{{ c.ctr|round(2) }}%</td>
+                <td class="right" style="{% if c.frequency > 3 %}color:var(--accent-2){% elif c.frequency < 2 %}color:var(--mint){% endif %}">{{ c.frequency|round(2) }}</td>
+                <td class="right">
+                  <div class="score-badge">
+                    <div class="score-bar"><div class="score-bar-fill" style="width:{{ c.score }}%;background:{% if c.score >= 80 %}var(--grad-mint){% elif c.score >= 50 %}linear-gradient(90deg,#FFB800,#FF5722){% else %}var(--grad-rose){% endif %}"></div></div>
+                    <span class="score-num" style="color:{% if c.score >= 80 %}var(--mint){% elif c.score >= 50 %}var(--accent-2){% else %}var(--rose){% endif %}">{{ c.score|int }}</span>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Audience Intelligence -->
+      {% if audience and audience.age_gender %}
+      <section class="section">
+        <div class="section-head">
+          <h2>Audience Intelligence <small>· demographics + placement + geo</small></h2>
+          <span class="section-meta">Breakdown account-level</span>
+        </div>
+
+        <div class="audience-grid">
+          <!-- Age + Gender -->
+          <div class="audience-card">
+            <h3>🎯 Performance por edad + género</h3>
+            <div class="demo-bars">
+              {% set max_purch = audience.age_gender|map(attribute='purchases')|max %}
+              {% for d in audience.age_gender[:8] %}
+              <div class="demo-bar">
+                <div class="demo-bar-label">
+                  {{ d.age }}
+                  <span class="gender-pill {{ d.gender }}">{{ d.gender[:1]|upper }}</span>
+                </div>
+                <div class="demo-bar-track">
+                  <div class="demo-bar-fill {{ d.gender }}" style="width: {{ (d.purchases / max_purch * 100) if max_purch else 0 }}%"></div>
+                </div>
+                <div class="demo-bar-val">{{ d.purchases }} <span style="color:var(--text-3);font-weight:500">({{ d.purchase_share|round(0)|int }}%)</span></div>
+                <div class="demo-bar-cpa">{{ (d.cpa / 1000)|round(0)|int if d.cpa else '—' }}{% if d.cpa %}K{% endif %}</div>
+              </div>
+              {% endfor %}
+            </div>
+            {% if audience.gender_split %}
+            <div class="audience-summary">
+              <strong>{{ audience.gender_split.male_pct|round(0)|int }}% hombres / {{ audience.gender_split.female_pct|round(0)|int }}% mujeres</strong> de las compras. Top demo: <strong>{{ audience.top_demo.label }}</strong> con {{ audience.top_demo.purchases }} purchases ({{ audience.top_demo.purchase_share|round(0)|int }}%).
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Placement + Country -->
+          <div class="audience-card">
+            <h3>📍 Top placements</h3>
+            <div class="placement-list">
+              {% set max_pl_share = audience.placement|map(attribute='purchase_share')|max if audience.placement else 1 %}
+              {% for pl in audience.placement[:6] %}
+              <div class="placement-row">
+                <div class="placement-bar" style="width: {{ (pl.purchase_share / max_pl_share * 100) if max_pl_share else 0 }}%"></div>
+                <span class="placement-name">{{ pl.label }}</span>
+                <span class="placement-share">{{ pl.purchases }} buy</span>
+                <span class="placement-share" style="color:var(--text-2)">{{ pl.purchase_share|round(0)|int }}%</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            {% if audience.country %}
+            <h3 style="margin-top:24px">🌎 Países</h3>
+            <div class="country-strip">
+              {% for co in audience.country[:4] %}
+              <div class="country-row">
+                <span class="country-flag">{% if co.country == 'CO' %}🇨🇴{% elif co.country == 'US' %}🇺🇸{% elif co.country == 'MX' %}🇲🇽{% elif co.country == 'EC' %}🇪🇨{% elif co.country == 'VE' %}🇻🇪{% else %}🌍{% endif %}</span>
+                <span class="country-name">{{ co.country }}</span>
+                <span class="country-stat">{{ co.purchases }} <span style="color:var(--text-3);font-weight:500">({{ co.purchase_share|round(0)|int }}%)</span></span>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Post ID Intelligence -->
+      {% if post_ids and post_ids|length > 0 %}
+      <section class="section">
+        <div class="section-head">
+          <h2>Post ID Intelligence <small>· consolidado cross-adset</small></h2>
+          <span class="section-meta">{{ stats.post_ids_total }} posts · {{ stats.post_ids_with_purchases }} con conversiones</span>
+        </div>
+        <div class="post-list">
+          {% for p in post_ids[:15] %}
+          <div class="post-row">
+            <div class="post-rank{% if loop.index <= 3 %} top{% endif %}">{{ '%02d' % loop.index }}</div>
+            <div class="post-thumb">
+              {% if p.thumbnail_url %}<img src="{{ p.thumbnail_url }}" alt="thumb" onerror="this.style.display='none'">{% else %}POST<br>{{ p.post_id[-4:] if p.post_id else '?' }}{% endif %}
+            </div>
+            <div class="post-meta">
+              <h4>{{ p.ad_names[0]|truncate_smart(46) if p.ad_names else 'Post ' + p.post_id[-12:] }}</h4>
+              <p>id …{{ p.post_id[-12:] if p.post_id else '' }} · {{ p.ad_count }} ad{{ 's' if p.ad_count != 1 else '' }}{% if p.active_count %} · {{ p.active_count }} active{% endif %} · {{ p.adsets_count }} adset{{ 's' if p.adsets_count != 1 else '' }}</p>
+              <div class="post-tags">
+                {% set tag_class = p.label|lower|replace(' ', '-') %}
+                <span class="post-tag {{ tag_class }}">{{ p.label }}</span>
+                {% if p.frequency > 4 %}<span class="post-tag fatigued">freq {{ p.frequency|round(1) }}</span>{% endif %}
+              </div>
+            </div>
+            <div class="hide-md">
+              <div class="post-stat-num" style="{% if p.cpa and summary.cpa and p.cpa < summary.cpa * 0.7 %}color:var(--mint){% elif p.cpa and summary.cpa and p.cpa > summary.cpa * 1.3 %}color:var(--rose){% endif %}">{{ p.cpa|fmt }}</div>
+              <div class="post-stat-label">CPA</div>
+            </div>
+            <div class="hide-md">
+              <div class="post-stat-num">{{ p.purchases }}</div>
+              <div class="post-stat-label">PURCHASES</div>
+            </div>
+            <div class="hide-md">
+              <div class="post-stat-num">{{ p.spend|fmt }}</div>
+              <div class="post-stat-label">SPEND</div>
+            </div>
+            <div>
+              <div class="post-stat-num">{{ p.ctr|round(2) }}%</div>
+              <div class="post-stat-label">CTR</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if post_ids|length > 15 %}
+        <p style="margin-top:14px;font-size:12px;color:var(--text-3);text-align:center">Mostrando top 15 de {{ post_ids|length }} posts. Resto disponible en el JSON.</p>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      <!-- Recommendations -->
+      {% if recommendations %}
+      <section class="section">
+        <div class="section-head">
+          <h2>Recomendaciones AI <small>· basadas en data real</small></h2>
+          <span class="section-meta">{{ recommendations|length }} acciones priorizadas</span>
+        </div>
+        <div class="recos-list">
+          {% for r in recommendations %}
+          <div class="reco-card">
+            <div class="reco-icon {{ r.icon_class }}">{{ r.icon }}</div>
+            <div class="reco-body">
+              <h4>{{ r.title }}</h4>
+              <p>{{ r.description|safe }}</p>
+            </div>
+            <span class="reco-priority {{ r.priority }}">{{ r.priority_label }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Footer -->
+      <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px;color:var(--text-4);flex-wrap:wrap;gap:14px">
+        <span>Serene · AI Performance Command Center · v3.0 — Python engine</span>
+        <span>{{ account.id }} · Generado {{ generated_at }}</span>
+      </div>
+
+    </main>
+  </div>
+</body>
+</html>
