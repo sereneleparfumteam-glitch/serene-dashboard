@@ -55,6 +55,13 @@ def run(snapshot_filename: str, *, upload: bool = False, public_name: str | None
         with open(activity_path) as f:
             snap["activity"] = json.load(f)
 
+    # Optional: merge historical campaigns snapshot (data/history_campaigns.json)
+    history_path = DATA_DIR / "history_campaigns.json"
+    if history_path.exists():
+        print(f"📥 Loading Historical Campaigns: {history_path}")
+        with open(history_path) as f:
+            snap["historical_campaigns"] = json.load(f)
+
     print(f"🧠 Analyzing {snap['account']['name']}…")
     analyzed = analyze_snapshot(snap)
     s = analyzed["stats"]

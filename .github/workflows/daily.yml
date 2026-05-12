@@ -51,6 +51,9 @@ jobs:
           # Extract Activity Feed (Meta + Shopify; Google blocked until OAuth regen)
           python3 extract_activity.py --account-id act_1020250386264513 --since $SINCE --until $UNTIL --out data/activity_snapshot.json || echo "⚠ Activity extract failed, continuing without it"
 
+          # Extract Historical Campaigns (last 180d paused) — Pack I prediction Nivel 3
+          python3 extract_history.py --account-id act_1020250386264513 --days-back 180 --enrich-top-n 50 --out data/history_campaigns.json || echo "⚠ History extract failed, predictor cae a v1"
+
           # Archive snapshots to history/ (foundation for Pack E forecasting + anomaly detection)
           mkdir -p data/history
           TODAY=$(date -u +%Y-%m-%d)

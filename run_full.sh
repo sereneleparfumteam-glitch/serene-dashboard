@@ -98,6 +98,12 @@ if ! python3 extract_activity.py --account-id "$ACCOUNT_ID" --since "$SINCE" --u
   log "⚠ Extract Activity failed (non-fatal)"
 fi
 
+# Extract Historical Campaigns (last 180d paused) — para Pack I prediction Nivel 3
+log "[1.8/4] Extract Historical Campaigns (last 180d paused)"
+if ! python3 extract_history.py --account-id "$ACCOUNT_ID" --days-back 180 --enrich-top-n 50 --out data/history_campaigns.json 2>&1 | tee -a "$LOG_FILE"; then
+  log "⚠ Extract History failed (non-fatal — predictor v2 cae a v1 sin comparables)"
+fi
+
 # Archive snapshot to history/ (foundation for Pack E forecasting + anomaly detection)
 mkdir -p data/history
 TODAY=$(date -u +%Y-%m-%d)

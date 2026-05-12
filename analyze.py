@@ -1047,11 +1047,25 @@ def analyze_snapshot(snapshot: dict) -> dict:
     except Exception:
         period_days = 7
 
+    # Historical campaigns pool for Nivel 3 prediction
+    hist_data = snapshot.get("historical_campaigns") or {}
+    hist_pool = hist_data.get("campaigns", []) if hist_data else []
+
+    # Try v2 predictor (Nivel 2+3) — fallback a v1 si falla
+    try:
+        from predict_duration import predict_duration_v2
+        predictor_v2 = predict_duration_v2
+    except ImportError:
+        predictor_v2 = None
+
     enriched_camps = []
     for c in campaigns:
         score, breakdown = calculate_score(c, summary)
         status_code, status_label = classify_status(c, score, summary)
-        duration = predict_campaign_duration(c, days_in_period=period_days)
+        if predictor_v2 and hist_pool:
+            duration = predictor_v2(c, summary, hist_pool, days_in_period=period_days)
+        else:
+            duration = predict_campaign_duration(c, days_in_period=period_days)
         enriched_camps.append({
             **c,
             "score": score,
