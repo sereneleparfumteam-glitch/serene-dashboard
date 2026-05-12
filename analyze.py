@@ -998,6 +998,17 @@ def analyze_snapshot(snapshot: dict) -> dict:
     aud_insights = audience_insights(audience, summary)
     insights.extend(aud_insights)
 
+    # Shopify data (if loaded as sibling snapshot)
+    shopify = None
+    shopify_raw = snapshot.get("shopify")
+    if shopify_raw:
+        try:
+            from analyze_shopify import analyze_shopify_snapshot
+            shopify = analyze_shopify_snapshot(shopify_raw, meta_spend=summary.get("spend", 0))
+            insights.extend(shopify.get("insights", []))
+        except Exception as e:
+            print(f"⚠ Shopify analyze failed: {e}", file=__import__('sys').stderr)
+
     recos = generate_recommendations(summary, campaigns, insights, tracking)
 
     # Funnel rates
@@ -1033,6 +1044,7 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "audience": audience,
         "urgent_actions": urgent_actions,
         "comparison": snapshot.get("comparison"),  # multi-account comparison if present
+        "shopify": shopify,
         "stats": {
             "campaigns_total": len(campaigns),
             "campaigns_scale": sum(1 for c in enriched_camps if c["status_code"] == "scale"),

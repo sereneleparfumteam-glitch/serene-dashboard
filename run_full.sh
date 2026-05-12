@@ -76,10 +76,20 @@ SLUG="${ACCOUNT_ID#act_}"
 SNAPSHOT_FILE="${SLUG}_${SINCE}_to_${UNTIL}.json"
 
 log ""
-log "[1/4] Extract"
+log "[1/4] Extract Meta"
 if ! python3 extract.py "$ACCOUNT_ID" --since "$SINCE" --until "$UNTIL" --out "$SNAPSHOT_FILE" 2>&1 | tee -a "$LOG_FILE"; then
-  log "❌ Extract failed"
+  log "❌ Extract Meta failed"
   exit 1
+fi
+
+# Extract Shopify (optional — skips silently if creds missing)
+if [[ -n "${SHOPIFY_CLIENT_ID:-}" && -n "${SHOPIFY_CLIENT_SECRET:-}" ]]; then
+  log "[1.5/4] Extract Shopify"
+  if ! python3 extract_shopify.py --since "$SINCE" --until "$UNTIL" --out data/shopify_snapshot.json 2>&1 | tee -a "$LOG_FILE"; then
+    log "⚠ Extract Shopify failed (non-fatal — continúa sin data Shopify)"
+  fi
+else
+  log "[1.5/4] Skip Shopify (no SHOPIFY_CLIENT_ID/SECRET in env)"
 fi
 
 # ──── 2. Analyze + Render + Upload ────

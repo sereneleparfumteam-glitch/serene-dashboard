@@ -41,6 +41,13 @@ def run(snapshot_filename: str, *, upload: bool = False, public_name: str | None
     print(f"📥 Loading: {snapshot_path}")
     snap = load_snapshot(snapshot_path)
 
+    # Optional: merge Shopify snapshot if sibling file exists (data/shopify_snapshot.json)
+    shopify_path = DATA_DIR / "shopify_snapshot.json"
+    if shopify_path.exists():
+        print(f"📥 Loading Shopify: {shopify_path}")
+        with open(shopify_path) as f:
+            snap["shopify"] = json.load(f)
+
     print(f"🧠 Analyzing {snap['account']['name']}…")
     analyzed = analyze_snapshot(snap)
     s = analyzed["stats"]

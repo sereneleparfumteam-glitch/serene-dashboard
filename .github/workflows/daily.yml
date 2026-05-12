@@ -29,6 +29,10 @@ jobs:
       - name: Run pipeline (extract + analyze + render)
         env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          # Shopify (Pack A — Revenue intelligence)
+          SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
+          SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+          SHOPIFY_SHOP: sereneleparfum.myshopify.com
           # Optional notification backends
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -37,6 +41,12 @@ jobs:
           UNTIL=$(date -u +%Y-%m-%d)
           SINCE=$(date -u -d "7 days ago" +%Y-%m-%d)
           python3 extract.py act_1020250386264513 --since $SINCE --until $UNTIL --out latest.json
+
+          # Extract Shopify (optional — non-fatal if creds missing or API fails)
+          mkdir -p data
+          if [[ -n "${SHOPIFY_CLIENT_ID}" && -n "${SHOPIFY_CLIENT_SECRET}" ]]; then
+            python3 extract_shopify.py --since $SINCE --until $UNTIL --out data/shopify_snapshot.json || echo "⚠ Shopify extract failed, continuing without it"
+          fi
 
           # Analyze + render → output/
           python3 main.py latest.json
