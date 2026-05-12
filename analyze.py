@@ -1011,6 +1011,14 @@ def analyze_snapshot(snapshot: dict) -> dict:
 
     recos = generate_recommendations(summary, campaigns, insights, tracking)
 
+    # Smart opportunities (Pack F) — recomendaciones de próximas publicaciones
+    smart_opps = []
+    try:
+        from recommend import generate_smart_opportunities
+        smart_opps = generate_smart_opportunities(shopify, post_ids_consolidated, campaigns, summary)
+    except Exception as e:
+        print(f"⚠ Smart opportunities failed: {e}", file=__import__('sys').stderr)
+
     # Funnel rates
     funnel = {
         "impressions": summary["impressions"],
@@ -1046,6 +1054,7 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "comparison": snapshot.get("comparison"),  # multi-account comparison if present
         "shopify": shopify,
         "activity": snapshot.get("activity"),  # cross-platform activity feed
+        "smart_opportunities": smart_opps,  # próximas publicaciones recomendadas
         "stats": {
             "campaigns_total": len(campaigns),
             "campaigns_scale": sum(1 for c in enriched_camps if c["status_code"] == "scale"),

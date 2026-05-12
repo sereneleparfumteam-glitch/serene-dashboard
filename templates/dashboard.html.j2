@@ -546,7 +546,8 @@
         <a class="sidebar-link" href="#campaigns" data-target="campaigns">📈 Campaigns <span class="sidebar-link-badge">{{ stats.campaigns_total }}</span></a>
         {% if post_ids %}<a class="sidebar-link" href="#post-ids" data-target="post-ids">🎬 Post IDs <span class="sidebar-link-badge" style="background:var(--accent-2);color:#000">{{ stats.post_ids_with_purchases }}</span></a>{% endif %}
         {% if audience and audience.age_gender %}<a class="sidebar-link" href="#audience" data-target="audience">👥 Audience</a>{% endif %}
-        {% if recommendations %}<a class="sidebar-link" href="#recommendations" data-target="recommendations">💡 Recos <span class="sidebar-link-badge" style="background:var(--mint);color:#000">{{ recommendations|length }}</span></a>{% endif %}
+        {% if smart_opportunities %}<a class="sidebar-link" href="#opportunities" data-target="opportunities">💡 Próximas publicaciones <span class="sidebar-link-badge" style="background:var(--accent);color:#000">{{ smart_opportunities|length }}</span></a>{% endif %}
+        {% if recommendations %}<a class="sidebar-link" href="#recommendations" data-target="recommendations">🧠 Recos AI <span class="sidebar-link-badge" style="background:var(--mint);color:#000">{{ recommendations|length }}</span></a>{% endif %}
       </div>
       <div class="sidebar-footer">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
@@ -1119,6 +1120,45 @@
         {% if post_ids|length > 15 %}
         <p style="margin-top:14px;font-size:12px;color:var(--text-3);text-align:center">Mostrando top 15 de {{ post_ids|length }} posts. Resto disponible en el JSON.</p>
         {% endif %}
+      </section>
+      {% endif %}
+
+      <!-- Smart Opportunities · Próximas publicaciones recomendadas -->
+      {% if smart_opportunities and smart_opportunities|length > 0 %}
+      <section class="section" id="opportunities">
+        <div class="section-head">
+          <h2>💡 Próximas publicaciones <small>· {{ smart_opportunities|length }} oportunidades · gap analysis basada en data</small></h2>
+          <span class="section-meta">algorítmico · auto-detectado</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px">
+          {% for o in smart_opportunities %}
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:14px;right:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;background:linear-gradient(135deg,#34d399,#10b981);color:#000;padding:3px 8px;border-radius:6px;font-weight:700">{{ o.confidence }}%</div>
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
+              <span style="font-size:24px;line-height:1">{{ o.emoji }}</span>
+              <div style="flex:1">
+                <h3 style="font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.35;padding-right:50px">{{ o.hook }}</h3>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:rgba(255,87,34,.14);color:var(--accent)">{{ o.funnel|upper }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:rgba(99,102,241,.14);color:var(--blue)">{{ o.avatar|upper }}</span>
+                  {% if o.sku %}<span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:var(--surface-3);color:var(--text-2)">{{ o.sku }}</span>{% endif %}
+                </div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-2);line-height:1.55;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+              <strong style="color:var(--text-3);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em">Why</strong><br>
+              {{ o.why }}
+            </div>
+            <div style="font-size:12px;color:var(--text-1);line-height:1.55">
+              <strong style="color:var(--mint);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em">Action</strong><br>
+              {{ o.action }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <p style="text-align:center;font-size:11px;color:var(--text-4);margin-top:18px">
+          Recomendaciones derivadas de gap analysis sobre Meta winners + Shopify top SKUs. Fase 2 (futuro): trends externos + competitor scraping + LLM synthesis.
+        </p>
       </section>
       {% endif %}
 
