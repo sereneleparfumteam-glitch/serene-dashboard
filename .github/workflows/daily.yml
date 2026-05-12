@@ -51,6 +51,14 @@ jobs:
           # Extract Activity Feed (Meta + Shopify; Google blocked until OAuth regen)
           python3 extract_activity.py --account-id act_1020250386264513 --since $SINCE --until $UNTIL --out data/activity_snapshot.json || echo "⚠ Activity extract failed, continuing without it"
 
+          # Archive snapshots to history/ (foundation for Pack E forecasting + anomaly detection)
+          mkdir -p data/history
+          TODAY=$(date -u +%Y-%m-%d)
+          cp latest.json "data/history/meta_${TODAY}.json" 2>/dev/null || true
+          [[ -f data/shopify_snapshot.json ]] && cp data/shopify_snapshot.json "data/history/shopify_${TODAY}.json" || true
+          [[ -f data/activity_snapshot.json ]] && cp data/activity_snapshot.json "data/history/activity_${TODAY}.json" || true
+          find data/history -type f -mtime +90 -delete 2>/dev/null || true
+
           # Analyze + render → output/
           python3 main.py latest.json
 
@@ -65,7 +73,7 @@ jobs:
         run: |
           git config user.name "Serene Dashboard Bot"
           git config user.email "bot@sereneleparfum.team"
-          git add public/index.html
+          git add public/index.html data/history/
           if ! git diff --staged --quiet; then
             git commit -m "auto: dashboard refresh $(date -u +%Y-%m-%d)"
             git push

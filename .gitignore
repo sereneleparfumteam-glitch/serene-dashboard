@@ -16,6 +16,10 @@ __pycache__/
 data/*.json
 !data/.gitkeep
 
+# History archive SÍ se commitea — foundation para Pack E forecasting/anomaly
+!data/history/
+!data/history/*.json
+
 # Logs
 logs/
 *.log

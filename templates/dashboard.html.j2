@@ -569,6 +569,18 @@
           <p><strong style="color:var(--text-1);font-weight:600">{{ account.name }}</strong> · {{ date_range.since }} → {{ date_range.until }} · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado {{ generated_at }}</span></p>
         </div>
         <div class="topbar-actions">
+          {% if shopify %}
+          <span style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(52,211,153,.12),rgba(255,184,0,.06));border:1px solid rgba(52,211,153,.30);padding:6px 12px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--mint)" data-tip="Revenue real Shopify · ROAS = revenue / Meta spend">
+            💰 ${{ (shopify.revenue / 1_000_000)|round(1) }}M
+            <span style="color:var(--text-3);font-weight:500">·</span>
+            <span style="color:{{ '#34d399' if shopify.real_roas and shopify.real_roas >= 2 else '#f43f5e' if shopify.real_roas and shopify.real_roas < 1 else 'var(--text-1)' }}">{{ "%.1fx"|format(shopify.real_roas) if shopify.real_roas else "—" }}</span>
+          </span>
+          {% endif %}
+          {% if activity and activity.total_human %}
+          <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.10);border:1px solid rgba(99,102,241,.25);padding:6px 12px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--blue)" data-tip="Cambios humanos cross-platform en el período">
+            🕒 {{ activity.total_human }}
+          </span>
+          {% endif %}
           <span class="live-pill warn" data-tip="Data extraída via Meta Graph API v22.0 directamente">{{ data_source_label }}</span>
           <button class="action-btn" id="btn-regen" data-tip="Dispara GitHub Action para regenerar (requiere PAT)">
             <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0114-5.3M20 4v5h-5M20 12a8 8 0 01-14 5.3M4 20v-5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>

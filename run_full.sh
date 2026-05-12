@@ -98,6 +98,16 @@ if ! python3 extract_activity.py --account-id "$ACCOUNT_ID" --since "$SINCE" --u
   log "⚠ Extract Activity failed (non-fatal)"
 fi
 
+# Archive snapshot to history/ (foundation for Pack E forecasting + anomaly detection)
+mkdir -p data/history
+TODAY=$(date -u +%Y-%m-%d)
+cp "data/$SNAPSHOT_FILE" "data/history/meta_${TODAY}.json" 2>/dev/null && log "  → archived meta snapshot to history/meta_${TODAY}.json"
+[[ -f data/shopify_snapshot.json ]] && cp data/shopify_snapshot.json "data/history/shopify_${TODAY}.json" && log "  → archived shopify snapshot to history/shopify_${TODAY}.json"
+[[ -f data/activity_snapshot.json ]] && cp data/activity_snapshot.json "data/history/activity_${TODAY}.json" && log "  → archived activity snapshot to history/activity_${TODAY}.json"
+
+# Keep last 90 days of history (rotation)
+find data/history -type f -mtime +90 -delete 2>/dev/null || true
+
 # ──── 2. Analyze + Render + Upload ────
 log ""
 log "[2/4] Analyze + Render"
