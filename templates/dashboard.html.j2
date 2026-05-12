@@ -542,6 +542,7 @@
         {% if shopify %}<a class="sidebar-link" href="#shopify" data-target="shopify">🛍 Shopify <span class="sidebar-link-badge" style="background:var(--mint);color:#000">{{ "%.1fx"|format(shopify.real_roas) if shopify.real_roas else "—" }}</span></a>{% endif %}
         <a class="sidebar-link" href="#funnel" data-target="funnel">🔻 Funnel</a>
         <a class="sidebar-link" href="#alerts" data-target="alerts">⚠ Insights <span class="sidebar-link-badge">{{ stats.insights_critical + stats.insights_warning }}</span></a>
+        {% if activity and activity.total_human %}<a class="sidebar-link" href="#activity" data-target="activity">🕒 Activity <span class="sidebar-link-badge" style="background:var(--blue);color:#fff">{{ activity.total_human }}</span></a>{% endif %}
         <a class="sidebar-link" href="#campaigns" data-target="campaigns">📈 Campaigns <span class="sidebar-link-badge">{{ stats.campaigns_total }}</span></a>
         {% if post_ids %}<a class="sidebar-link" href="#post-ids" data-target="post-ids">🎬 Post IDs <span class="sidebar-link-badge" style="background:var(--accent-2);color:#000">{{ stats.post_ids_with_purchases }}</span></a>{% endif %}
         {% if audience and audience.age_gender %}<a class="sidebar-link" href="#audience" data-target="audience">👥 Audience</a>{% endif %}
@@ -1027,6 +1028,52 @@
       </section>
       {% endif %}
 
+      <!-- Activity Feed · Trazabilidad cross-platform -->
+      {% if activity and activity.events %}
+      <section class="section" id="activity">
+        <div class="section-head">
+          <h2>🕒 Activity Feed <small>· trazabilidad cross-platform · {{ activity.total_human }} cambios humanos · {{ activity.since }} → {{ activity.until }}</small></h2>
+          <span class="section-meta">{{ activity.top_actors|length }} actores · top: {{ activity.top_actors[0].name if activity.top_actors else '—' }}</span>
+        </div>
+
+        <!-- Filtros + actors strip -->
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;align-items:center">
+          <button class="actfilter active" data-platform="all" style="padding:6px 12px;border-radius:99px;background:rgba(255,87,34,.15);color:var(--accent);border:1px solid rgba(255,87,34,.3);font-size:12px;font-weight:600">Todos ({{ activity.total_human }})</button>
+          <button class="actfilter" data-platform="meta" style="padding:6px 12px;border-radius:99px;background:rgba(24,119,242,.10);color:#6ba1f2;border:1px solid rgba(24,119,242,.25);font-size:12px;font-weight:500">Meta</button>
+          <button class="actfilter" data-platform="shopify" style="padding:6px 12px;border-radius:99px;background:rgba(149,201,84,.10);color:#95C954;border:1px solid rgba(149,201,84,.25);font-size:12px;font-weight:500">Shopify</button>
+          <span style="margin-left:12px;font-size:11px;color:var(--text-4)">· Top actores:</span>
+          {% for a in activity.top_actors[:5] %}
+          <button class="actfilter" data-actor="{{ a.name }}" style="padding:6px 12px;border-radius:99px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:500">{{ a.name|truncate_smart(16) }} <span style="color:var(--text-4);font-weight:400">{{ a.count }}</span></button>
+          {% endfor %}
+        </div>
+
+        <!-- Event timeline -->
+        <div id="activity-list" style="display:flex;flex-direction:column;gap:6px;max-height:600px;overflow-y:auto;padding-right:8px">
+          {% for e in activity.events[:200] %}
+          {% if not e.is_system %}
+          <div class="act-row" data-platform="{{ e.platform }}" data-actor="{{ e.actor }}" style="display:grid;grid-template-columns:80px 90px 1fr auto;gap:14px;align-items:center;padding:10px 14px;background:var(--surface-1);border:1px solid var(--border);border-radius:10px;font-size:12px{% if e.flag and e.flag.severity == 'critical' %};border-color:rgba(244,63,94,.35);background:rgba(244,63,94,.04){% elif e.flag and e.flag.severity == 'warning' %};border-color:rgba(255,184,0,.30);background:rgba(255,184,0,.04){% endif %}">
+            <code style="color:var(--text-3);font-size:11px">{{ e.timestamp[:16].replace('T',' ') if e.timestamp else '—' }}</code>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:6px;text-align:center;{% if e.platform == 'meta' %}background:rgba(24,119,242,.15);color:#6ba1f2{% elif e.platform == 'shopify' %}background:rgba(149,201,84,.15);color:#95C954{% elif e.platform == 'google' %}background:rgba(66,133,244,.15);color:#7BAEFF{% endif %}">{{ e.platform|upper }}</span>
+            <div style="overflow:hidden">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+                <strong style="font-weight:700;color:var(--text-1)">{{ e.actor }}</strong>
+                {% if e.flag %}<span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:{% if e.flag.severity == 'critical' %}var(--rose){% elif e.flag.severity == 'warning' %}var(--accent-2){% else %}var(--blue){% endif %};color:#fff">🚩 {{ e.flag.label }}</span>{% endif %}
+              </div>
+              <span style="color:var(--text-2)">{{ e.event_label }} <span style="color:var(--text-3)">·</span> <em style="color:var(--text-3);font-style:normal">{{ e.object_name|truncate_smart(50) }}</em></span>
+              {% if e.change_summary %}<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-2);margin-top:2px">{{ e.change_summary }}</div>{% endif %}
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+
+        <p style="text-align:center;font-size:11px;color:var(--text-4);margin-top:12px">
+          {% if activity.events|length >= 300 %}Mostrando primeros 200 · total cargado {{ activity.events|length }}{% else %}Total mostrado: {{ activity.events|length }}{% endif %}
+          {% if activity.top_actors %} · Google Ads change_event pendiente — bloqueado por OAuth refresh token revoked.{% endif %}
+        </p>
+      </section>
+      {% endif %}
+
       <!-- Post ID Intelligence -->
       {% if post_ids and post_ids|length > 0 %}
       <section class="section" id="post-ids">
@@ -1346,6 +1393,52 @@
         asc = !asc;
         rows.forEach(r => tbody.appendChild(r));
         toast(`Ordenado por ${th.textContent.trim()} ${asc ? '↓' : '↑'}`, 'success', 1500);
+      });
+    });
+
+    // Activity Feed filters
+    const actFilters = document.querySelectorAll('.actfilter');
+    const actRows = document.querySelectorAll('.act-row');
+    let currentPlatform = 'all';
+    let currentActor = null;
+    function applyActFilter() {
+      actRows.forEach(r => {
+        const p = r.getAttribute('data-platform');
+        const a = r.getAttribute('data-actor');
+        const matchP = currentPlatform === 'all' || p === currentPlatform;
+        const matchA = !currentActor || a === currentActor;
+        r.style.display = (matchP && matchA) ? '' : 'none';
+      });
+    }
+    actFilters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.hasAttribute('data-platform')) {
+          currentPlatform = btn.getAttribute('data-platform');
+          document.querySelectorAll('.actfilter[data-platform]').forEach(b => {
+            b.classList.remove('active');
+            b.style.background = 'var(--surface-2)';
+            b.style.color = 'var(--text-2)';
+            b.style.borderColor = 'var(--border)';
+          });
+          btn.classList.add('active');
+          btn.style.background = 'rgba(255,87,34,.15)';
+          btn.style.color = 'var(--accent)';
+          btn.style.borderColor = 'rgba(255,87,34,.3)';
+        } else if (btn.hasAttribute('data-actor')) {
+          const a = btn.getAttribute('data-actor');
+          currentActor = (currentActor === a) ? null : a;
+          document.querySelectorAll('.actfilter[data-actor]').forEach(b => {
+            b.style.background = 'var(--surface-2)';
+            b.style.color = 'var(--text-2)';
+            b.style.borderColor = 'var(--border)';
+          });
+          if (currentActor) {
+            btn.style.background = 'rgba(99,102,241,.15)';
+            btn.style.color = 'var(--blue)';
+            btn.style.borderColor = 'rgba(99,102,241,.3)';
+          }
+        }
+        applyActFilter();
       });
     });
 

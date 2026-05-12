@@ -48,6 +48,9 @@ jobs:
             python3 extract_shopify.py --since $SINCE --until $UNTIL --out data/shopify_snapshot.json || echo "⚠ Shopify extract failed, continuing without it"
           fi
 
+          # Extract Activity Feed (Meta + Shopify; Google blocked until OAuth regen)
+          python3 extract_activity.py --account-id act_1020250386264513 --since $SINCE --until $UNTIL --out data/activity_snapshot.json || echo "⚠ Activity extract failed, continuing without it"
+
           # Analyze + render → output/
           python3 main.py latest.json
 

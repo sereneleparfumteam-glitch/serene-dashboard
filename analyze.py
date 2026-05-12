@@ -1045,6 +1045,7 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "urgent_actions": urgent_actions,
         "comparison": snapshot.get("comparison"),  # multi-account comparison if present
         "shopify": shopify,
+        "activity": snapshot.get("activity"),  # cross-platform activity feed
         "stats": {
             "campaigns_total": len(campaigns),
             "campaigns_scale": sum(1 for c in enriched_camps if c["status_code"] == "scale"),

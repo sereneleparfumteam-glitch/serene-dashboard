@@ -48,6 +48,13 @@ def run(snapshot_filename: str, *, upload: bool = False, public_name: str | None
         with open(shopify_path) as f:
             snap["shopify"] = json.load(f)
 
+    # Optional: merge Activity Feed snapshot (data/activity_snapshot.json)
+    activity_path = DATA_DIR / "activity_snapshot.json"
+    if activity_path.exists():
+        print(f"📥 Loading Activity Feed: {activity_path}")
+        with open(activity_path) as f:
+            snap["activity"] = json.load(f)
+
     print(f"🧠 Analyzing {snap['account']['name']}…")
     analyzed = analyze_snapshot(snap)
     s = analyzed["stats"]

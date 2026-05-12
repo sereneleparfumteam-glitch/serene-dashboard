@@ -92,6 +92,12 @@ else
   log "[1.5/4] Skip Shopify (no SHOPIFY_CLIENT_ID/SECRET in env)"
 fi
 
+# Extract Activity Feed (Meta + Shopify + Google)
+log "[1.7/4] Extract Activity Feed"
+if ! python3 extract_activity.py --account-id "$ACCOUNT_ID" --since "$SINCE" --until "$UNTIL" --out data/activity_snapshot.json 2>&1 | tee -a "$LOG_FILE"; then
+  log "⚠ Extract Activity failed (non-fatal)"
+fi
+
 # ──── 2. Analyze + Render + Upload ────
 log ""
 log "[2/4] Analyze + Render"
