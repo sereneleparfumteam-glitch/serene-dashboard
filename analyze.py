@@ -1051,6 +1051,72 @@ def analyze_snapshot(snapshot: dict) -> dict:
     hist_data = snapshot.get("historical_campaigns") or {}
     hist_pool = hist_data.get("campaigns", []) if hist_data else []
 
+    # Build model stats for "Modelo Predictivo" dashboard section
+    model_stats = None
+    if hist_pool:
+        durs = sorted([c["duration_days"] for c in hist_pool if c.get("duration_days")])
+        if durs:
+            n = len(durs)
+            mean_d = sum(durs) / n
+            median_d = durs[n // 2]
+            p25 = durs[n // 4]
+            p75 = durs[(3 * n) // 4]
+            p90 = durs[int(n * 0.9)] if n >= 10 else durs[-1]
+
+            # Bucket distribution
+            buckets = [
+                ("1-3d", 0, 3),
+                ("4-7d", 4, 7),
+                ("8-14d", 8, 14),
+                ("15-30d", 15, 30),
+                ("31-60d", 31, 60),
+                ("61-90d", 61, 90),
+                ("91-180d", 91, 180),
+            ]
+            distribution = []
+            for label, lo, hi in buckets:
+                count = sum(1 for d in durs if lo <= d <= hi)
+                if count > 0:
+                    distribution.append({
+                        "label": label,
+                        "count": count,
+                        "pct": round(count / n * 100, 1),
+                    })
+
+            # By objective
+            by_obj = {}
+            for c in hist_pool:
+                obj = c.get("objective", "?")
+                d = c.get("duration_days")
+                if d:
+                    by_obj.setdefault(obj, []).append(d)
+            obj_stats = []
+            for obj, ds in by_obj.items():
+                if len(ds) >= 3:
+                    obj_stats.append({
+                        "objective": obj,
+                        "count": len(ds),
+                        "median": sorted(ds)[len(ds) // 2],
+                        "mean": round(sum(ds) / len(ds), 1),
+                    })
+            obj_stats.sort(key=lambda x: -x["count"])
+
+            model_stats = {
+                "dataset_size": n,
+                "total_paused_window": hist_data.get("total_paused_in_window", n),
+                "days_back": hist_data.get("days_back", 180),
+                "fetched_at": hist_data.get("fetched_at"),
+                "mean": round(mean_d, 1),
+                "median": median_d,
+                "p25": p25,
+                "p75": p75,
+                "p90": p90,
+                "max": durs[-1],
+                "min": durs[0],
+                "distribution": distribution,
+                "by_objective": obj_stats[:5],
+            }
+
     # Try v2 predictor (Nivel 2+3) — fallback a v1 si falla
     try:
         from predict_duration import predict_duration_v2
@@ -1156,6 +1222,7 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "activity": snapshot.get("activity"),  # cross-platform activity feed
         "smart_opportunities": smart_opps,  # próximas publicaciones recomendadas
         "history": history_data,  # forecast + anomaly detection (necesita >=3-7d acumulados)
+        "model_stats": model_stats,  # stats del modelo predictivo de duración
         "stats": {
             "campaigns_total": len(campaigns),
             "campaigns_scale": sum(1 for c in enriched_camps if c["status_code"] == "scale"),

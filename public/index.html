@@ -543,6 +543,7 @@
         <a class="sidebar-link" href="#funnel" data-target="funnel">🔻 Funnel</a>
         <a class="sidebar-link" href="#alerts" data-target="alerts">⚠ Insights <span class="sidebar-link-badge">9</span></a>
         <a class="sidebar-link" href="#opportunities" data-target="opportunities">💡 Próximas publicaciones <span class="sidebar-link-badge" style="background:var(--accent);color:#000">10</span></a>
+        <a class="sidebar-link" href="#model" data-target="model">🧠 Modelo Predictivo <span class="sidebar-link-badge" style="background:var(--blue);color:#fff">275</span></a>
         <a class="sidebar-link" href="#campaigns" data-target="campaigns">📈 Campaigns <span class="sidebar-link-badge">27</span></a>
         <a class="sidebar-link" href="#activity" data-target="activity">🕒 Activity <span class="sidebar-link-badge" style="background:var(--blue);color:#fff">427</span></a>
         <a class="sidebar-link" href="#post-ids" data-target="post-ids">🎬 Post IDs <span class="sidebar-link-badge" style="background:var(--accent-2);color:#000">22</span></a>
@@ -553,7 +554,7 @@
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
           <span class="live-pill warn" style="font-size:10px;padding:4px 10px">active</span>
         </div>
-        v3.0 · Auto-generated<br>12 May 20:31
+        v3.0 · Auto-generated<br>12 May 20:36
       </div>
     </aside>
 
@@ -566,7 +567,7 @@
         </button>
         <div class="topbar-title">
           <h1>Performance <span class="serif">command</span> center</h1>
-          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-05 → 2026-05-12 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-12 20:31</span></p>
+          <p><strong style="color:var(--text-1);font-weight:600">PRUEBA GABRIELA</strong> · 2026-05-05 → 2026-05-12 · <span data-tip="Última generación del dashboard. El cron corre cada día 7am.">Generado 2026-05-12 20:36</span></p>
         </div>
         <div class="topbar-actions">
           
@@ -1417,6 +1418,218 @@
         <p style="text-align:center;font-size:11px;color:var(--text-4);margin-top:18px">
           Recomendaciones derivadas de gap analysis sobre Meta winners + Shopify top SKUs. Fase 2 (futuro): trends externos + competitor scraping + LLM synthesis.
         </p>
+      </section>
+      
+
+      <!-- Modelo Predictivo · Duración de campañas -->
+      
+      <section class="section" id="model">
+        <div class="section-head">
+          <h2>🧠 Modelo Predictivo <small>· duración campañas · Nivel 2+3 (heurística + comparable past)</small></h2>
+          <span class="section-meta">275 campañas históricas · last 180d</span>
+        </div>
+
+        <!-- 4 KPI tiles -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px">
+          <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.04));border:1px solid rgba(99,102,241,.30);border-radius:14px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">Dataset</div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">275 <span style="font-size:11px;color:var(--text-3);font-weight:500">campañas</span></div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px">paused last 180d</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Mediana duración</div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">8d</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px">Mean 15.4d · max 110d</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Rango P25-P75</div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">4–17d</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px">50% campañas en este rango</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">P90 (cola larga)</div>
+            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">47d</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px">10% campañas pasan este límite</div>
+          </div>
+        </div>
+
+        <!-- Distribución gráfica -->
+        <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-bottom:18px">
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px">
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📊 Distribución duración <small style="color:var(--text-3);font-weight:500;font-size:11px">· cuánto duran tus campañas antes de pausarse</small></h3>
+            
+            <div style="display:flex;flex-direction:column;gap:8px">
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">1-3d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:51.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">45 <span style="color:var(--text-3);font-weight:500">(16.4%)</span></span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">4-7d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:100.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">88 <span style="color:var(--text-3);font-weight:500">(32.0%)</span></span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">8-14d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:67.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">59 <span style="color:var(--text-3);font-weight:500">(21.5%)</span></span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">15-30d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:53.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">47 <span style="color:var(--text-3);font-weight:500">(17.1%)</span></span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">31-60d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:24.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">21 <span style="color:var(--text-3);font-weight:500">(7.6%)</span></span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">61-90d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:16.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">14 <span style="color:var(--text-3);font-weight:500">(5.1%)</span></span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
+                <code style="color:var(--text-3);font-weight:600">91-180d</code>
+                <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
+                  <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:1.0%;border-radius:6px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">1 <span style="color:var(--text-3);font-weight:500">(0.4%)</span></span>
+              </div>
+              
+            </div>
+          </div>
+
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px">
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📋 Por objective</h3>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+                <code style="color:var(--accent);font-weight:600">SALES</code>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--text-3)">n=266</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700">median 8d</span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+                <code style="color:var(--accent);font-weight:600">AWARENESS</code>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--text-3)">n=4</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700">median 56d</span>
+              </div>
+              
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+                <code style="color:var(--accent);font-weight:600">ENGAGEMENT</code>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--text-3)">n=3</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700">median 13d</span>
+              </div>
+              
+            </div>
+            <p style="font-size:11px;color:var(--text-4);margin-top:12px;line-height:1.55">
+              Cuando una campaña activa tiene mismo objective + budget similar, se usa este median como baseline de predicción.
+            </p>
+          </div>
+        </div>
+
+        <!-- Active campaigns: top en riesgo + top saludables -->
+        
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+          <div style="background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.25);border-radius:14px;padding:18px">
+            <h3 style="font-size:14px;font-weight:700;color:var(--rose);margin-bottom:14px">🔥 En riesgo · pausar pronto</h3>
+            
+            <div style="display:flex;flex-direction:column;gap:6px">
+              
+              
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+                <div style="overflow:hidden">
+                  <div style="color:var(--text-1);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">TESTEO 18/03</div>
+                  <div style="color:var(--text-3);font-size:11px;margin-top:2px">freq 3.24 · edad 55d · 8 sim</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent-2);font-size:14px">1d</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--accent-2);color:#000;padding:2px 6px;border-radius:4px;font-weight:700">WARMING</span>
+              </div>
+              
+              
+            </div>
+            
+          </div>
+
+          <div style="background:rgba(52,211,153,.04);border:1px solid rgba(52,211,153,.20);border-radius:14px;padding:18px">
+            <h3 style="font-size:14px;font-weight:700;color:var(--mint);margin-bottom:14px">✅ Saludables · margen amplio</h3>
+            
+            <div style="display:flex;flex-direction:column;gap:6px">
+              
+              
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+                <div style="overflow:hidden">
+                  <div style="color:var(--text-1);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">TEST ESCALA CBO WIN 02/05/2026 TODO KIT F…</div>
+                  <div style="color:var(--text-3);font-size:11px;margin-top:2px">freq 1.69 · edad 10d · 8 sim</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--mint);font-size:14px">15d</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--mint);color:#000;padding:2px 6px;border-radius:4px;font-weight:700">HEALTHY</span>
+              </div>
+              
+              
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Explicación cómo funciona -->
+        <details style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:14px 18px">
+          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text-2);user-select:none">📖 Cómo funciona el modelo · features + pesos</summary>
+          <div style="margin-top:14px;font-size:12px;color:var(--text-2);line-height:1.65">
+            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Inputs (qué mira):</strong></p>
+            <ul style="padding-left:20px;margin-bottom:14px">
+              <li><strong style="color:var(--accent)">Frequency actual</strong> + tasa de crecimiento por día (Nivel 2)</li>
+              <li><strong style="color:var(--accent)">Edad de la campaña</strong> (start_time → hoy)</li>
+              <li><strong style="color:var(--accent)">CPA actual vs promedio cuenta</strong> — si está 1.5x sobre, resta 3 días</li>
+              <li><strong style="color:var(--accent)">Similitud con campañas pasadas</strong> de tu cuenta (Nivel 3, peso mayor)</li>
+            </ul>
+
+            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Cómo encuentra similares (top-8 matching):</strong></p>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px">
+              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">40%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Mismo objective</div></div>
+              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">20%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Tokens del nombre</div></div>
+              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">15%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Bid strategy</div></div>
+              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">15%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Daily budget</div></div>
+              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">10%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Buying type</div></div>
+            </div>
+
+            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Fórmula:</strong></p>
+            <pre style="background:var(--surface-2);padding:12px;border-radius:8px;font-size:11px;color:var(--mint);overflow-x:auto;margin-bottom:14px">predicción_v2 = median(días de top-8 similares) − edad_actual
+
+confidence = 40 + (matches × 7)   # 0 matches → 35%, 8 matches → 95%
+
+si CPA &gt; 1.5x avg cuenta → predicción −= 3 días
+si freq &gt; 5.0 → predicción = 0 (burnt)</pre>
+
+            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Próximos pasos (Nivel 4):</strong></p>
+            <ul style="padding-left:20px;color:var(--text-3)">
+              <li>Random Forest sobre 30+ días de history archivado (ya estamos acumulando desde 2026-05-12)</li>
+              <li>Survival analysis (Kaplan-Meier) sobre todas las campañas paused</li>
+              <li>Auto-pause cuando confidence &gt; 90% y days_remaining = 0</li>
+            </ul>
+          </div>
+        </details>
       </section>
       
 
@@ -5277,7 +5490,7 @@
       <!-- Footer -->
       <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px;color:var(--text-4);flex-wrap:wrap;gap:14px">
         <span>Serene · AI Performance Command Center · v3.0 — Python engine</span>
-        <span>act_1020250386264513 · Generado 2026-05-12 20:31</span>
+        <span>act_1020250386264513 · Generado 2026-05-12 20:36</span>
       </div>
 
     </main>
