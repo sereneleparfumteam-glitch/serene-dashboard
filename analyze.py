@@ -849,18 +849,19 @@ def analyze_audience(audience_raw: dict, account_summary: dict) -> dict:
         })
     pl_buckets.sort(key=lambda x: -x["purchases"])
 
-    # 3. Country (group small ones)
+    # 3. Region (departamentos en Colombia, group small ones)
     co_buckets = []
-    for row in audience_raw.get("country", []) or []:
+    for row in audience_raw.get("region", []) or []:
         m = _row_metrics(row)
         if m["spend"] == 0 and m["purchases"] == 0:
             continue
         co_buckets.append({
-            "country": row.get("country", "?"),
+            "region": row.get("region", "?"),
             **m,
             "purchase_share": (m["purchases"] / total_purchases * 100) if total_purchases else 0,
         })
-    co_buckets.sort(key=lambda x: -x["purchases"])
+    # Sort por purchases si hay, fallback a spend (regiones rara vez tienen purchase events propagados)
+    co_buckets.sort(key=lambda x: (-x["purchases"], -x["spend"]))
 
     # 4. Device
     dev_buckets = []
@@ -878,7 +879,7 @@ def analyze_audience(audience_raw: dict, account_summary: dict) -> dict:
     # Top winners
     top_demo = ag_buckets[0] if ag_buckets else None
     top_placement = pl_buckets[0] if pl_buckets else None
-    top_country = co_buckets[0] if co_buckets else None
+    top_region = co_buckets[0] if co_buckets else None
 
     # Gender split
     male_purch = sum(b["purchases"] for b in ag_buckets if b["gender"] == "male")
@@ -888,11 +889,11 @@ def analyze_audience(audience_raw: dict, account_summary: dict) -> dict:
     return {
         "age_gender": ag_buckets,
         "placement": pl_buckets[:8],  # top 8 placements
-        "country": co_buckets[:6],
+        "region": co_buckets[:8],
         "device": dev_buckets,
         "top_demo": top_demo,
         "top_placement": top_placement,
-        "top_country": top_country,
+        "top_region": top_region,
         "gender_split": {
             "male_purchases": male_purch,
             "female_purchases": female_purch,

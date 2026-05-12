@@ -923,14 +923,19 @@
               {% endfor %}
             </div>
 
-            {% if audience.country %}
-            <h3 style="margin-top:24px">🌎 Países</h3>
+            {% if audience.region %}
+            {% set total_region_spend = audience.region|sum(attribute='spend') %}
+            <h3 style="margin-top:24px">📍 Regiones <small style="color:var(--text-3);font-weight:500;font-size:11px">· top por spend · clicks/CPC reales</small></h3>
             <div class="country-strip">
-              {% for co in audience.country[:4] %}
+              {% for re in audience.region[:8] %}
               <div class="country-row">
-                <span class="country-flag">{% if co.country == 'CO' %}🇨🇴{% elif co.country == 'US' %}🇺🇸{% elif co.country == 'MX' %}🇲🇽{% elif co.country == 'EC' %}🇪🇨{% elif co.country == 'VE' %}🇻🇪{% else %}🌍{% endif %}</span>
-                <span class="country-name">{{ co.country }}</span>
-                <span class="country-stat">{{ co.purchases }} <span style="color:var(--text-3);font-weight:500">({{ co.purchase_share|round(0)|int }}%)</span></span>
+                <span class="country-flag">📍</span>
+                <span class="country-name">{{ re.region }}</span>
+                <span class="country-stat">
+                  {{ re.clicks|int }} clk
+                  <span style="color:var(--text-3);font-weight:500">· ${{ (re.spend / 1000)|round(0)|int }}K</span>
+                  <span style="color:var(--text-3);font-weight:500">· {{ ((re.spend / total_region_spend * 100) if total_region_spend else 0)|round(0)|int }}%</span>
+                </span>
               </div>
               {% endfor %}
             </div>

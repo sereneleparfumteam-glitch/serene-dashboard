@@ -165,7 +165,7 @@ def get_audience_breakdowns(account_id: str, since: str, until: str) -> dict:
     for label, breakdowns in [
         ("age_gender", ["age", "gender"]),
         ("placement", ["publisher_platform", "platform_position"]),
-        ("country", ["country"]),
+        ("region", ["region"]),
         ("device", ["impression_device"]),
     ]:
         try:
@@ -305,7 +305,7 @@ def build_snapshot(account_id: str, since: str, until: str, include_post_ids: bo
 
     print(f"📡 Audience breakdowns…")
     audience_raw = get_audience_breakdowns(account_id, since, until)
-    print(f"   age_gender: {len(audience_raw.get('age_gender', []))} · placement: {len(audience_raw.get('placement', []))} · country: {len(audience_raw.get('country', []))} · device: {len(audience_raw.get('device', []))}")
+    print(f"   age_gender: {len(audience_raw.get('age_gender', []))} · placement: {len(audience_raw.get('placement', []))} · region: {len(audience_raw.get('region', []))} · device: {len(audience_raw.get('device', []))}")
 
     # Index camp_insights by campaign_id (when present, otherwise by name)
     insights_by_id = {}
