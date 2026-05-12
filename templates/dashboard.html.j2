@@ -542,11 +542,11 @@
         {% if shopify %}<a class="sidebar-link" href="#shopify" data-target="shopify">🛍 Shopify <span class="sidebar-link-badge" style="background:var(--mint);color:#000">{{ "%.1fx"|format(shopify.real_roas) if shopify.real_roas else "—" }}</span></a>{% endif %}
         <a class="sidebar-link" href="#funnel" data-target="funnel">🔻 Funnel</a>
         <a class="sidebar-link" href="#alerts" data-target="alerts">⚠ Insights <span class="sidebar-link-badge">{{ stats.insights_critical + stats.insights_warning }}</span></a>
-        {% if activity and activity.total_human %}<a class="sidebar-link" href="#activity" data-target="activity">🕒 Activity <span class="sidebar-link-badge" style="background:var(--blue);color:#fff">{{ activity.total_human }}</span></a>{% endif %}
+        {% if smart_opportunities %}<a class="sidebar-link" href="#opportunities" data-target="opportunities">💡 Próximas publicaciones <span class="sidebar-link-badge" style="background:var(--accent);color:#000">{{ smart_opportunities|length }}</span></a>{% endif %}
         <a class="sidebar-link" href="#campaigns" data-target="campaigns">📈 Campaigns <span class="sidebar-link-badge">{{ stats.campaigns_total }}</span></a>
+        {% if activity and activity.total_human %}<a class="sidebar-link" href="#activity" data-target="activity">🕒 Activity <span class="sidebar-link-badge" style="background:var(--blue);color:#fff">{{ activity.total_human }}</span></a>{% endif %}
         {% if post_ids %}<a class="sidebar-link" href="#post-ids" data-target="post-ids">🎬 Post IDs <span class="sidebar-link-badge" style="background:var(--accent-2);color:#000">{{ stats.post_ids_with_purchases }}</span></a>{% endif %}
         {% if audience and audience.age_gender %}<a class="sidebar-link" href="#audience" data-target="audience">👥 Audience</a>{% endif %}
-        {% if smart_opportunities %}<a class="sidebar-link" href="#opportunities" data-target="opportunities">💡 Próximas publicaciones <span class="sidebar-link-badge" style="background:var(--accent);color:#000">{{ smart_opportunities|length }}</span></a>{% endif %}
         {% if recommendations %}<a class="sidebar-link" href="#recommendations" data-target="recommendations">🧠 Recos AI <span class="sidebar-link-badge" style="background:var(--mint);color:#000">{{ recommendations|length }}</span></a>{% endif %}
       </div>
       <div class="sidebar-footer">
@@ -923,6 +923,45 @@
       </section>
       {% endif %}
 
+      <!-- Smart Opportunities · Próximas publicaciones recomendadas -->
+      {% if smart_opportunities and smart_opportunities|length > 0 %}
+      <section class="section" id="opportunities">
+        <div class="section-head">
+          <h2>💡 Próximas publicaciones <small>· {{ smart_opportunities|length }} oportunidades · gap analysis basada en data</small></h2>
+          <span class="section-meta">algorítmico · auto-detectado</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px">
+          {% for o in smart_opportunities %}
+          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:14px;right:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;background:linear-gradient(135deg,#34d399,#10b981);color:#000;padding:3px 8px;border-radius:6px;font-weight:700">{{ o.confidence }}%</div>
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
+              <span style="font-size:24px;line-height:1">{{ o.emoji }}</span>
+              <div style="flex:1">
+                <h3 style="font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.35;padding-right:50px">{{ o.hook }}</h3>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:rgba(255,87,34,.14);color:var(--accent)">{{ o.funnel|upper }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:rgba(99,102,241,.14);color:var(--blue)">{{ o.avatar|upper }}</span>
+                  {% if o.sku %}<span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:var(--surface-3);color:var(--text-2)">{{ o.sku }}</span>{% endif %}
+                </div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-2);line-height:1.55;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+              <strong style="color:var(--text-3);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em">Why</strong><br>
+              {{ o.why }}
+            </div>
+            <div style="font-size:12px;color:var(--text-1);line-height:1.55">
+              <strong style="color:var(--mint);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em">Action</strong><br>
+              {{ o.action }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <p style="text-align:center;font-size:11px;color:var(--text-4);margin-top:18px">
+          Recomendaciones derivadas de gap analysis sobre Meta winners + Shopify top SKUs. Fase 2 (futuro): trends externos + competitor scraping + LLM synthesis.
+        </p>
+      </section>
+      {% endif %}
+
       <!-- Campaigns table -->
       <section class="section" id="campaigns">
         <div class="section-head">
@@ -940,6 +979,7 @@
                 <th class="right">CPA</th>
                 <th class="right">CTR</th>
                 <th class="right">Freq</th>
+                <th class="right">Duración</th>
                 <th class="right">Score</th>
               </tr>
             </thead>
@@ -956,6 +996,21 @@
                 <td class="right">{% if c.cpa %}<span style="{% if c.cpa < summary.cpa * 0.7 %}color:var(--mint);font-weight:700{% elif c.cpa > summary.cpa * 1.3 %}color:var(--rose){% endif %}">{{ c.cpa|fmt }}</span>{% else %}<span style="color:var(--rose)">∞</span>{% endif %}</td>
                 <td class="right" style="{% if c.ctr > summary.ctr * 1.5 %}color:var(--mint){% elif c.ctr < summary.ctr * 0.6 %}color:var(--rose){% endif %}">{{ c.ctr|round(2) }}%</td>
                 <td class="right" style="{% if c.frequency > 3 %}color:var(--accent-2){% elif c.frequency < 2 %}color:var(--mint){% endif %}">{{ c.frequency|round(2) }}</td>
+                <td class="right" data-tip="{{ c.duration.reason }} · freq actual {{ c.duration.freq_now }} · +{{ c.duration.freq_per_day }}/día">
+                  {% if c.duration.status == 'paused' %}
+                    <span style="color:var(--text-4);font-size:11px">⏸ paused</span>
+                  {% elif c.duration.status == 'fresh' %}
+                    <span style="color:var(--mint);font-weight:700">{{ c.duration.days_remaining if c.duration.days_remaining < 30 else '30+' }}d</span><br><span style="font-size:10px;color:var(--text-4)">fresh</span>
+                  {% elif c.duration.status == 'healthy' %}
+                    <span style="color:var(--mint)">{{ c.duration.days_remaining if c.duration.days_remaining < 30 else '30+' }}d</span><br><span style="font-size:10px;color:var(--text-4)">healthy</span>
+                  {% elif c.duration.status == 'warming' %}
+                    <span style="color:var(--accent-2);font-weight:700">{{ c.duration.days_remaining }}d</span><br><span style="font-size:10px;color:var(--accent-2)">warming</span>
+                  {% elif c.duration.status == 'fatigued' %}
+                    <span style="color:var(--accent);font-weight:700">{{ c.duration.days_remaining }}d</span><br><span style="font-size:10px;color:var(--accent)">fatigued</span>
+                  {% else %}
+                    <span style="color:var(--rose);font-weight:700">0d</span><br><span style="font-size:10px;color:var(--rose)">🔥 burnt</span>
+                  {% endif %}
+                </td>
                 <td class="right">
                   <div class="score-badge">
                     <div class="score-bar"><div class="score-bar-fill" style="width:{{ c.score }}%;background:{% if c.score >= 80 %}var(--grad-mint){% elif c.score >= 50 %}linear-gradient(90deg,#FFB800,#FF5722){% else %}var(--grad-rose){% endif %}"></div></div>
@@ -969,77 +1024,6 @@
         </div>
       </section>
 
-      <!-- Audience Intelligence -->
-      {% if audience and audience.age_gender %}
-      <section class="section" id="audience">
-        <div class="section-head">
-          <h2>Audience Intelligence <small>· demographics + placement + geo</small></h2>
-          <span class="section-meta">Breakdown account-level</span>
-        </div>
-
-        <div class="audience-grid">
-          <!-- Age + Gender -->
-          <div class="audience-card">
-            <h3>🎯 Performance por edad + género</h3>
-            <div class="demo-bars">
-              {% set max_purch = audience.age_gender|map(attribute='purchases')|max %}
-              {% for d in audience.age_gender[:8] %}
-              <div class="demo-bar">
-                <div class="demo-bar-label">
-                  {{ d.age }}
-                  <span class="gender-pill {{ d.gender }}">{{ d.gender[:1]|upper }}</span>
-                </div>
-                <div class="demo-bar-track">
-                  <div class="demo-bar-fill {{ d.gender }}" style="width: {{ (d.purchases / max_purch * 100) if max_purch else 0 }}%"></div>
-                </div>
-                <div class="demo-bar-val">{{ d.purchases }} <span style="color:var(--text-3);font-weight:500">({{ d.purchase_share|round(0)|int }}%)</span></div>
-                <div class="demo-bar-cpa">{{ (d.cpa / 1000)|round(0)|int if d.cpa else '—' }}{% if d.cpa %}K{% endif %}</div>
-              </div>
-              {% endfor %}
-            </div>
-            {% if audience.gender_split %}
-            <div class="audience-summary">
-              <strong>{{ audience.gender_split.male_pct|round(0)|int }}% hombres / {{ audience.gender_split.female_pct|round(0)|int }}% mujeres</strong> de las compras. Top demo: <strong>{{ audience.top_demo.label }}</strong> con {{ audience.top_demo.purchases }} purchases ({{ audience.top_demo.purchase_share|round(0)|int }}%).
-            </div>
-            {% endif %}
-          </div>
-
-          <!-- Placement + Country -->
-          <div class="audience-card">
-            <h3>📍 Top placements</h3>
-            <div class="placement-list">
-              {% set max_pl_share = audience.placement|map(attribute='purchase_share')|max if audience.placement else 1 %}
-              {% for pl in audience.placement[:6] %}
-              <div class="placement-row">
-                <div class="placement-bar" style="width: {{ (pl.purchase_share / max_pl_share * 100) if max_pl_share else 0 }}%"></div>
-                <span class="placement-name">{{ pl.label }}</span>
-                <span class="placement-share">{{ pl.purchases }} buy</span>
-                <span class="placement-share" style="color:var(--text-2)">{{ pl.purchase_share|round(0)|int }}%</span>
-              </div>
-              {% endfor %}
-            </div>
-
-            {% if audience.region %}
-            {% set total_region_spend = audience.region|sum(attribute='spend') %}
-            <h3 style="margin-top:24px">📍 Regiones <small style="color:var(--text-3);font-weight:500;font-size:11px">· top por spend · clicks/CPC reales</small></h3>
-            <div class="country-strip">
-              {% for re in audience.region[:8] %}
-              <div class="country-row">
-                <span class="country-flag">📍</span>
-                <span class="country-name">{{ re.region }}</span>
-                <span class="country-stat">
-                  {{ re.clicks|int }} clk
-                  <span style="color:var(--text-3);font-weight:500">· ${{ (re.spend / 1000)|round(0)|int }}K</span>
-                  <span style="color:var(--text-3);font-weight:500">· {{ ((re.spend / total_region_spend * 100) if total_region_spend else 0)|round(0)|int }}%</span>
-                </span>
-              </div>
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
-        </div>
-      </section>
-      {% endif %}
 
       <!-- Activity Feed · Trazabilidad cross-platform -->
       {% if activity and activity.events %}
@@ -1135,42 +1119,75 @@
       </section>
       {% endif %}
 
-      <!-- Smart Opportunities · Próximas publicaciones recomendadas -->
-      {% if smart_opportunities and smart_opportunities|length > 0 %}
-      <section class="section" id="opportunities">
+      <!-- Audience Intelligence -->
+      {% if audience and audience.age_gender %}
+      <section class="section" id="audience">
         <div class="section-head">
-          <h2>💡 Próximas publicaciones <small>· {{ smart_opportunities|length }} oportunidades · gap analysis basada en data</small></h2>
-          <span class="section-meta">algorítmico · auto-detectado</span>
+          <h2>Audience Intelligence <small>· demographics + placement + geo</small></h2>
+          <span class="section-meta">Breakdown account-level</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px">
-          {% for o in smart_opportunities %}
-          <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden">
-            <div style="position:absolute;top:14px;right:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;background:linear-gradient(135deg,#34d399,#10b981);color:#000;padding:3px 8px;border-radius:6px;font-weight:700">{{ o.confidence }}%</div>
-            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
-              <span style="font-size:24px;line-height:1">{{ o.emoji }}</span>
-              <div style="flex:1">
-                <h3 style="font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.35;padding-right:50px">{{ o.hook }}</h3>
-                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:rgba(255,87,34,.14);color:var(--accent)">{{ o.funnel|upper }}</span>
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:rgba(99,102,241,.14);color:var(--blue)">{{ o.avatar|upper }}</span>
-                  {% if o.sku %}<span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:var(--surface-3);color:var(--text-2)">{{ o.sku }}</span>{% endif %}
+
+        <div class="audience-grid">
+          <!-- Age + Gender -->
+          <div class="audience-card">
+            <h3>🎯 Performance por edad + género</h3>
+            <div class="demo-bars">
+              {% set max_purch = audience.age_gender|map(attribute='purchases')|max %}
+              {% for d in audience.age_gender[:8] %}
+              <div class="demo-bar">
+                <div class="demo-bar-label">
+                  {{ d.age }}
+                  <span class="gender-pill {{ d.gender }}">{{ d.gender[:1]|upper }}</span>
                 </div>
+                <div class="demo-bar-track">
+                  <div class="demo-bar-fill {{ d.gender }}" style="width: {{ (d.purchases / max_purch * 100) if max_purch else 0 }}%"></div>
+                </div>
+                <div class="demo-bar-val">{{ d.purchases }} <span style="color:var(--text-3);font-weight:500">({{ d.purchase_share|round(0)|int }}%)</span></div>
+                <div class="demo-bar-cpa">{{ (d.cpa / 1000)|round(0)|int if d.cpa else '—' }}{% if d.cpa %}K{% endif %}</div>
               </div>
+              {% endfor %}
             </div>
-            <div style="font-size:12px;color:var(--text-2);line-height:1.55;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-              <strong style="color:var(--text-3);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em">Why</strong><br>
-              {{ o.why }}
+            {% if audience.gender_split %}
+            <div class="audience-summary">
+              <strong>{{ audience.gender_split.male_pct|round(0)|int }}% hombres / {{ audience.gender_split.female_pct|round(0)|int }}% mujeres</strong> de las compras. Top demo: <strong>{{ audience.top_demo.label }}</strong> con {{ audience.top_demo.purchases }} purchases ({{ audience.top_demo.purchase_share|round(0)|int }}%).
             </div>
-            <div style="font-size:12px;color:var(--text-1);line-height:1.55">
-              <strong style="color:var(--mint);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.08em">Action</strong><br>
-              {{ o.action }}
-            </div>
+            {% endif %}
           </div>
-          {% endfor %}
+
+          <!-- Placement + Country -->
+          <div class="audience-card">
+            <h3>📍 Top placements</h3>
+            <div class="placement-list">
+              {% set max_pl_share = audience.placement|map(attribute='purchase_share')|max if audience.placement else 1 %}
+              {% for pl in audience.placement[:6] %}
+              <div class="placement-row">
+                <div class="placement-bar" style="width: {{ (pl.purchase_share / max_pl_share * 100) if max_pl_share else 0 }}%"></div>
+                <span class="placement-name">{{ pl.label }}</span>
+                <span class="placement-share">{{ pl.purchases }} buy</span>
+                <span class="placement-share" style="color:var(--text-2)">{{ pl.purchase_share|round(0)|int }}%</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            {% if audience.region %}
+            {% set total_region_spend = audience.region|sum(attribute='spend') %}
+            <h3 style="margin-top:24px">📍 Regiones <small style="color:var(--text-3);font-weight:500;font-size:11px">· top por spend · clicks/CPC reales</small></h3>
+            <div class="country-strip">
+              {% for re in audience.region[:8] %}
+              <div class="country-row">
+                <span class="country-flag">📍</span>
+                <span class="country-name">{{ re.region }}</span>
+                <span class="country-stat">
+                  {{ re.clicks|int }} clk
+                  <span style="color:var(--text-3);font-weight:500">· ${{ (re.spend / 1000)|round(0)|int }}K</span>
+                  <span style="color:var(--text-3);font-weight:500">· {{ ((re.spend / total_region_spend * 100) if total_region_spend else 0)|round(0)|int }}%</span>
+                </span>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
         </div>
-        <p style="text-align:center;font-size:11px;color:var(--text-4);margin-top:18px">
-          Recomendaciones derivadas de gap analysis sobre Meta winners + Shopify top SKUs. Fase 2 (futuro): trends externos + competitor scraping + LLM synthesis.
-        </p>
       </section>
       {% endif %}
 
@@ -1248,10 +1265,19 @@
     }
     if (btnMenu) btnMenu.addEventListener('click', openDrawer);
     backdrop.addEventListener('click', closeDrawer);
-    // Close drawer on link click (mobile UX)
+    // Close drawer on link click (mobile UX) + smooth scroll fallback
     document.querySelectorAll('.sidebar-link').forEach(l => {
-      l.addEventListener('click', () => {
-        if (window.innerWidth <= 1024) setTimeout(closeDrawer, 200);
+      l.addEventListener('click', (ev) => {
+        const href = l.getAttribute('href') || '';
+        if (href.startsWith('#')) {
+          const target = document.querySelector(href);
+          if (target) {
+            ev.preventDefault();
+            const y = target.getBoundingClientRect().top + window.scrollY - 16;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }
+        if (window.innerWidth <= 1024) setTimeout(closeDrawer, 250);
       });
     });
     // Close drawer on Escape

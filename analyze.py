@@ -65,6 +65,72 @@ def stability_score(camp: dict) -> float:
     return 65
 
 
+def predict_campaign_duration(camp: dict, days_in_period: int = 7,
+                              fatigue_threshold: float = 5.0) -> dict:
+    """Predice cuántos días más aguanta la campaña antes de fatigarse.
+
+    Heurística:
+    - freq actual + tasa diaria de incremento (freq/days_in_period)
+    - llegar a fatigue_threshold=5.0 = audience quemada
+    - también considera reach/audience_size si está disponible
+
+    Retorna dict con:
+      - days_remaining: int or None
+      - status: "fresh" | "healthy" | "warming" | "fatigued" | "burnt"
+      - reason: str
+    """
+    if camp.get("effective_status") not in ("ACTIVE",):
+        return {
+            "days_remaining": None,
+            "status": "paused",
+            "reason": "Campaña pausada",
+            "freq_now": camp.get("frequency", 0),
+        }
+
+    freq = float(camp.get("frequency", 0) or 0)
+    spend = float(camp.get("spend", 0) or 0)
+    reach = float(camp.get("reach", 0) or 0)
+    impressions = float(camp.get("impressions", 0) or 0)
+
+    # Status by current freq
+    if freq <= 1.5:
+        status = "fresh"
+        msg = "Audience fresh, mucho margen"
+    elif freq <= 2.5:
+        status = "healthy"
+        msg = "Frequency saludable"
+    elif freq <= 3.5:
+        status = "warming"
+        msg = "Comenzando a fatigar"
+    elif freq <= 4.5:
+        status = "fatigued"
+        msg = "Audience cansada"
+    else:
+        status = "burnt"
+        msg = "Audience quemada — pausar/refresh"
+
+    # Predict days: assume freq grows linearly at current rate
+    if days_in_period > 0 and freq > 0:
+        freq_per_day = freq / days_in_period
+        if freq >= fatigue_threshold:
+            days_remaining = 0
+        elif freq_per_day > 0.05:  # significant growth
+            days_remaining = max(0, int((fatigue_threshold - freq) / freq_per_day))
+        else:
+            # Low growth → audience hasn't fatigued in current cycle
+            days_remaining = 30  # cap
+    else:
+        days_remaining = None
+
+    return {
+        "days_remaining": days_remaining,
+        "status": status,
+        "reason": msg,
+        "freq_now": round(freq, 2),
+        "freq_per_day": round(freq / days_in_period, 3) if days_in_period > 0 else 0,
+    }
+
+
 def calculate_score(camp: dict, account_summary: dict) -> tuple[float, dict]:
     """Returns (final_score, breakdown_dict)."""
     cpa = camp.get("cpa")
@@ -971,16 +1037,28 @@ def analyze_snapshot(snapshot: dict) -> dict:
     campaigns = snapshot["campaigns"]
     tracking = snapshot.get("tracking_health", {})
 
+    # Period days for duration prediction
+    dr = snapshot.get("date_range") or {}
+    try:
+        from datetime import date as _date
+        s = _date.fromisoformat(dr.get("since"))
+        u = _date.fromisoformat(dr.get("until"))
+        period_days = max(1, (u - s).days + 1)
+    except Exception:
+        period_days = 7
+
     enriched_camps = []
     for c in campaigns:
         score, breakdown = calculate_score(c, summary)
         status_code, status_label = classify_status(c, score, summary)
+        duration = predict_campaign_duration(c, days_in_period=period_days)
         enriched_camps.append({
             **c,
             "score": score,
             "score_breakdown": breakdown,
             "status_code": status_code,
             "status_label": status_label,
+            "duration": duration,
         })
     enriched_camps.sort(key=lambda c: -c["score"])
 
