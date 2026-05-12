@@ -47,25 +47,57 @@ def generate_summary(analyzed: dict, drive_link: str | None = None) -> dict:
     top_demo = audience.get("top_demo")
     demo_str = f"{top_demo['label']} ({top_demo['purchase_share']:.0f}%)" if top_demo else "—"
 
+    # Pack A: Shopify + ROAS real
+    shopify = analyzed.get("shopify") or {}
+    revenue_m = shopify.get("revenue", 0) / 1_000_000 if shopify else 0
+    real_roas = shopify.get("real_roas")
+    orders_count = shopify.get("orders_count", 0)
+
+    # Pack C: Activity volume
+    activity = analyzed.get("activity") or {}
+    human_changes = activity.get("total_human", 0)
+
+    # Pack F: Top opportunity
+    opportunities = analyzed.get("smart_opportunities") or []
+    top_opp = opportunities[0] if opportunities else None
+
     # PLAIN TEXT (Telegram, WhatsApp, console)
     text_lines = [
         f"📊 *Serene AI Dashboard* · {acc.get('name', '?')}",
         f"_{analyzed.get('date_range', {}).get('since', '?')} → {analyzed.get('date_range', {}).get('until', '?')}_",
         "",
-        f"💰 Spend: *{spend_k:,.0f}K {currency}*",
-        f"🛒 Purchases: *{purchases}* · CPA *{cpa:,.0f} {currency}*",
+        f"💰 Spend Meta: *{spend_k:,.0f}K {currency}*",
+    ]
+    if shopify:
+        text_lines.append(f"🛍 Revenue Shopify: *${revenue_m:.1f}M {shopify.get('currency','COP')}*  ({orders_count} órdenes)")
+        if real_roas:
+            roas_emoji = "✅" if real_roas >= 2 else "⚠️" if real_roas >= 1 else "🚨"
+            text_lines.append(f"{roas_emoji} ROAS real: *{real_roas:.2f}x*")
+    text_lines.extend([
+        f"🛒 Purchases Meta: *{purchases}* · CPA *{cpa:,.0f} {currency}*",
         f"🔄 Frequency: *{freq:.2f}*" + (" ⚠️" if freq > 4 else ""),
         f"🎯 Top demo: *{demo_str}*",
+    ])
+    if human_changes:
+        text_lines.append(f"🕒 Cambios humanos: *{human_changes}* en el período")
+
+    text_lines.extend([
         "",
         f"📋 {stats.get('campaigns_total', 0)} campañas · {stats.get('post_ids_with_purchases', 0)} posts con conversiones",
         f"🚨 {len(crit)} críticas · ⚠️ {len(warn)} warnings",
-    ]
+    ])
 
     if crit:
         text_lines.append("")
         text_lines.append("*Alertas críticas:*")
         for i in crit[:3]:
             text_lines.append(f"  🔴 {i.get('title', '?')}")
+
+    if top_opp:
+        text_lines.append("")
+        text_lines.append(f"*💡 Top opportunity ({top_opp['confidence']}% conf):*")
+        text_lines.append(f"  {top_opp['emoji']} {top_opp['hook']}")
+        text_lines.append(f"  _Why:_ {top_opp['why'][:120]}")
 
     if drive_link:
         text_lines.append("")

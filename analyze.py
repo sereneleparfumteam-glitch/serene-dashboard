@@ -1019,6 +1019,14 @@ def analyze_snapshot(snapshot: dict) -> dict:
     except Exception as e:
         print(f"⚠ Smart opportunities failed: {e}", file=__import__('sys').stderr)
 
+    # Historical trends (Pack E) — anomaly + forecast cuando hay >=3-7 días de history
+    history_data = None
+    try:
+        from history import compute_history_summary
+        history_data = compute_history_summary()
+    except Exception as e:
+        print(f"⚠ History compute failed: {e}", file=__import__('sys').stderr)
+
     # Funnel rates
     funnel = {
         "impressions": summary["impressions"],
@@ -1055,6 +1063,7 @@ def analyze_snapshot(snapshot: dict) -> dict:
         "shopify": shopify,
         "activity": snapshot.get("activity"),  # cross-platform activity feed
         "smart_opportunities": smart_opps,  # próximas publicaciones recomendadas
+        "history": history_data,  # forecast + anomaly detection (necesita >=3-7d acumulados)
         "stats": {
             "campaigns_total": len(campaigns),
             "campaigns_scale": sum(1 for c in enriched_camps if c["status_code"] == "scale"),
