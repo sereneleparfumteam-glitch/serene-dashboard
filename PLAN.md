@@ -1,7 +1,40 @@
 # Serene AI Dashboard · Roadmap Pro
 
-**Última actualización:** 2026-05-12
+**Última actualización:** 2026-05-12 (sprint completado, ver "Estado" abajo)
 **Objetivo:** Convertir el dashboard de "vista Meta Ads" a "command center 360° de Serene" — Meta + Shopify + Google Ads + trazabilidad + recomendaciones de contenido.
+
+## Estado final del sprint (2026-05-12)
+
+| Pack | Estado | Notas |
+|---|---|---|
+| **G** Ciudades/Regiones | ✅ COMPLETED | Geo breakdown por departamento (region), 34 regiones, top winners Distrito Especial + Antioquia |
+| **A** Shopify integration | ✅ COMPLETED | Revenue $108.6M/7d, ROAS real 8.15x, 654 órdenes, top SKUs, ciudades, cohorts, abandoned, inventory |
+| **B** Google Ads | 🚫 BLOCKED | Refresh token OAuth revoked. Acción usuario abajo. |
+| **C** Activity Feed | ✅ COMPLETED (Meta+Shopify) | 427 cambios humanos, 10 actores (Lidis, Gabriela), filtros JS, flags severity. Google se agrega cuando se desbloquee Pack B. |
+| **F** Smart Opportunities | ✅ COMPLETED (Fase 1) | 10 oportunidades algorítmicas cross-data. Fase 2 (LLM+trends) pendiente. |
+| **D** UI polish | ✅ COMPLETED | Topbar chips (revenue/ROAS/activity), historical archive (foundation Pack E) |
+| **E** Forecasting+Anomaly+Digest | ✅ INFRA COMPLETED | history.py listo (z-score + linear forecast). Activa automático a los 7 días. Digest enhanced YA con Shopify+ROAS+top-opp. |
+
+## Acciones requeridas del usuario para 100%
+
+### 1. Setear GitHub secrets (5 min)
+Para que el cron diario incluya Shopify automáticamente:
+- Ir a https://github.com/sereneleparfumteam-glitch/serene-dashboard/settings/secrets/actions
+- Agregar 2 secrets (los valores te los paso por chat privado):
+  - `SHOPIFY_CLIENT_ID`
+  - `SHOPIFY_CLIENT_SECRET`
+- (Opcional) `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` si querés el digest diario en Telegram
+
+Las credenciales están en `~/.claude.json` bajo `mcpServers.shopify.args` (clientId/clientSecret).
+
+### 2. Regenerar Google Ads OAuth refresh token (10 min)
+Para activar Pack B (Google Ads) + parte Google de Pack C (change_event):
+1. `cd /root/workspaces/serene-ads && ls credentials/` — ver dónde está el flow OAuth
+2. Probablemente ejecutar: `./venv/bin/python -m google_ads.scripts.refresh_token` (script de regen)
+3. O regenerar manualmente desde Google Cloud Console: https://console.cloud.google.com/apis/credentials → OAuth 2.0 Client → revoke old + create new
+4. Actualizar el token en `/root/workspaces/serene-ads/credentials/google-ads.yaml`
+5. Reiniciar el MCP server serene-ads-prod
+6. Decirme "Google listo" → arranco extract_google.py
 
 ---
 
