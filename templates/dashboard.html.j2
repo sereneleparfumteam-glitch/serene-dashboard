@@ -967,66 +967,114 @@
       {% if model_stats %}
       <section class="section" id="model">
         <div class="section-head">
-          <h2>🧠 Modelo Predictivo <small>· duración campañas · Nivel 2+3 (heurística + comparable past)</small></h2>
-          <span class="section-meta">{{ model_stats.dataset_size }} campañas históricas · last {{ model_stats.days_back }}d</span>
+          <h2>🧠 Modelo Predictivo <small>· cuánto va a durar cada campaña antes de quemar la audiencia</small></h2>
+          <span class="section-meta">aprendido de {{ model_stats.dataset_size }} campañas tuyas pasadas</span>
         </div>
 
-        <!-- 4 KPI tiles -->
+        <!-- Introducción plain text -->
+        <div style="background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(255,87,34,.04));border:1px solid rgba(99,102,241,.20);border-radius:14px;padding:18px;margin-bottom:18px;font-size:13px;color:var(--text-2);line-height:1.65">
+          <strong style="color:var(--text-1)">¿Qué hace este modelo?</strong> Mira las {{ model_stats.dataset_size }} campañas que vos ya pausaste en los últimos {{ model_stats.days_back }} días, encuentra las más parecidas a las que tenés corriendo hoy, y predice cuántos días más van a durar antes de que la audiencia se sature.
+          <br><br>
+          <strong style="color:var(--text-1)">⚠ Importante:</strong> hoy predice <em>fatiga de audiencia</em> (cuándo la gente ya vio la campaña demasiadas veces y deja de hacer click). <strong>NO</strong> predice rentabilidad — una campaña puede estar "saludable" en este modelo pero ser no rentable, o al revés. Para predicción de rentabilidad necesito tu margen + threshold de CPA.
+        </div>
+
+        <!-- 4 KPI tiles con labels human -->
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px">
           <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.04));border:1px solid rgba(99,102,241,.30);border-radius:14px;padding:18px">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">Dataset</div>
-            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">{{ model_stats.dataset_size }} <span style="font-size:11px;color:var(--text-3);font-weight:500">campañas</span></div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:4px">paused last {{ model_stats.days_back }}d</div>
+            <div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:8px">📚 Cuántas campañas analizamos</div>
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">{{ model_stats.dataset_size }}</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.45">Pausaste estas {{ model_stats.dataset_size }} campañas en los últimos {{ model_stats.days_back }} días. Son la "memoria" del modelo.</div>
           </div>
           <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Mediana duración</div>
-            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">{{ model_stats.median }}d</div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:4px">Mean {{ model_stats.mean }}d · max {{ model_stats.max }}d</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:8px">⏱ Cuánto duran típicamente</div>
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">{{ model_stats.median }} días</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.45">La mitad de tus campañas duraron menos de esto. La otra mitad, más. <em>(la otra estadística "promedio" sería {{ model_stats.mean }}d, pero la mediana es más confiable)</em></div>
           </div>
           <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">Rango P25-P75</div>
-            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">{{ model_stats.p25 }}–{{ model_stats.p75 }}d</div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:4px">50% campañas en este rango</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:8px">📏 Rango normal</div>
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">{{ model_stats.p25 }} a {{ model_stats.p75 }} d</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.45">El 50% de tus campañas duraron entre {{ model_stats.p25 }} y {{ model_stats.p75 }} días. Si una activa entra acá, está en el rango esperado.</div>
           </div>
           <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:18px">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px">P90 (cola larga)</div>
-            <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">{{ model_stats.p90 }}d</div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:4px">10% campañas pasan este límite</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:8px">🏆 Las más longevas</div>
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">{{ model_stats.p90 }}+ días</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.45">Solo el 10% de tus campañas duraron más de {{ model_stats.p90 }} días. Las que llegan acá son tus "joyas".</div>
           </div>
         </div>
 
-        <!-- Distribución gráfica -->
+        <!-- Leyenda de los 5 status -->
+        <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">🚦 Qué significa cada estado</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;font-size:12px">
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.20);border-radius:8px">
+              <span style="font-size:18px;line-height:1">🌱</span>
+              <div>
+                <div style="font-weight:700;color:var(--mint)">FRESH</div>
+                <div style="color:var(--text-3);margin-top:2px;line-height:1.45">Audiencia recién empieza a verla. Mucho margen para correr.</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(52,211,153,.04);border:1px solid rgba(52,211,153,.15);border-radius:8px">
+              <span style="font-size:18px;line-height:1">✅</span>
+              <div>
+                <div style="font-weight:700;color:var(--mint)">HEALTHY</div>
+                <div style="color:var(--text-3);margin-top:2px;line-height:1.45">Cada persona la vio 2-3 veces. Sweet spot, dejá correr.</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.20);border-radius:8px">
+              <span style="font-size:18px;line-height:1">⚠️</span>
+              <div>
+                <div style="font-weight:700;color:var(--accent-2)">WARMING</div>
+                <div style="color:var(--text-3);margin-top:2px;line-height:1.45">Ya la vieron 3-4 veces. Empieza a perder fuerza. Mirar CPA.</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(255,87,34,.06);border:1px solid rgba(255,87,34,.25);border-radius:8px">
+              <span style="font-size:18px;line-height:1">🥵</span>
+              <div>
+                <div style="font-weight:700;color:var(--accent)">FATIGUED</div>
+                <div style="color:var(--text-3);margin-top:2px;line-height:1.45">Audiencia ya cansada (4-5 vistas). Refresh creative o pausar.</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.25);border-radius:8px">
+              <span style="font-size:18px;line-height:1">🔥</span>
+              <div>
+                <div style="font-weight:700;color:var(--rose)">BURNT</div>
+                <div style="color:var(--text-3);margin-top:2px;line-height:1.45">Quemada (5+ vistas). Cada peso que pongas es a perder. Pausar YA.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribución gráfica + por objective -->
         <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-bottom:18px">
           <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px">
-            <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📊 Distribución duración <small style="color:var(--text-3);font-weight:500;font-size:11px">· cuánto duran tus campañas antes de pausarse</small></h3>
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:6px">📊 ¿Cuántos días duran tus campañas?</h3>
+            <p style="font-size:11px;color:var(--text-3);margin-bottom:14px;line-height:1.55">De las {{ model_stats.dataset_size }} campañas pasadas — cada barra muestra cuántas duraron ese tiempo.</p>
             {% set max_pct = model_stats.distribution|map(attribute='pct')|max %}
             <div style="display:flex;flex-direction:column;gap:8px">
               {% for d in model_stats.distribution %}
-              <div style="display:grid;grid-template-columns:70px 1fr 60px;gap:12px;align-items:center;font-size:12px">
-                <code style="color:var(--text-3);font-weight:600">{{ d.label }}</code>
+              <div style="display:grid;grid-template-columns:80px 1fr 110px;gap:12px;align-items:center;font-size:12px">
+                <span style="color:var(--text-2);font-weight:600">{{ d.label }}</span>
                 <div style="background:var(--surface-3);height:18px;border-radius:6px;overflow:hidden;position:relative">
                   <div style="background:linear-gradient(90deg,#6366f1,#FF5722);height:100%;width:{{ (d.pct / max_pct * 100)|round }}%;border-radius:6px"></div>
                 </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">{{ d.count }} <span style="color:var(--text-3);font-weight:500">({{ d.pct }}%)</span></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right">{{ d.count }} camp · <span style="color:var(--text-3);font-weight:500">{{ d.pct }}%</span></span>
               </div>
               {% endfor %}
             </div>
           </div>
 
           <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px">
-            <h3 style="font-size:14px;font-weight:700;margin-bottom:14px">📋 Por objective</h3>
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:6px">📋 Por tipo de campaña</h3>
+            <p style="font-size:11px;color:var(--text-3);margin-bottom:14px;line-height:1.55">Cuánto duran según objetivo. Las "SALES" son tus principales.</p>
             <div style="display:flex;flex-direction:column;gap:6px">
               {% for o in model_stats.by_objective %}
-              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
-                <code style="color:var(--accent);font-weight:600">{{ o.objective|replace('OUTCOME_','') }}</code>
-                <span style="font-family:'JetBrains Mono',monospace;color:var(--text-3)">n={{ o.count }}</span>
-                <span style="font-family:'JetBrains Mono',monospace;font-weight:700">median {{ o.median }}d</span>
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+                <span style="color:var(--text-1);font-weight:600">{{ o.objective|replace('OUTCOME_','')|capitalize }}</span>
+                <span style="color:var(--text-3);font-size:11px">{{ o.count }} pasadas</span>
+                <span style="font-weight:700">~{{ o.median }} días</span>
               </div>
               {% endfor %}
             </div>
-            <p style="font-size:11px;color:var(--text-4);margin-top:12px;line-height:1.55">
-              Cuando una campaña activa tiene mismo objective + budget similar, se usa este median como baseline de predicción.
-            </p>
           </div>
         </div>
 
@@ -1035,18 +1083,21 @@
         {% set safe_camps = campaigns|selectattr('duration.status', 'in', ['fresh','healthy'])|list %}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
           <div style="background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.25);border-radius:14px;padding:18px">
-            <h3 style="font-size:14px;font-weight:700;color:var(--rose);margin-bottom:14px">🔥 En riesgo · pausar pronto</h3>
+            <h3 style="font-size:14px;font-weight:700;color:var(--rose);margin-bottom:6px">🔥 Pausar pronto</h3>
+            <p style="font-size:11px;color:var(--text-3);margin-bottom:14px;line-height:1.55">Activas que están <strong>warming, fatigued o burnt</strong>. Pocos días les quedan antes de quemar audiencia.</p>
             {% if active_camps %}
             <div style="display:flex;flex-direction:column;gap:6px">
               {% for c in active_camps|sort(attribute='duration.days_remaining')|list %}
               {% if loop.index <= 6 %}
-              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+              <div style="padding:10px;border-bottom:1px solid var(--border);font-size:12px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center">
                 <div style="overflow:hidden">
-                  <div style="color:var(--text-1);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name|truncate_smart(42) }}</div>
-                  <div style="color:var(--text-3);font-size:11px;margin-top:2px">freq {{ c.duration.freq_now }} · edad {{ c.duration.age_days or '?' }}d{% if c.duration.comparable_count %} · {{ c.duration.comparable_count }} sim{% endif %}</div>
+                  <div style="color:var(--text-1);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px">{{ c.name|truncate_smart(40) }}</div>
+                  <div style="color:var(--text-3);font-size:11px;line-height:1.45">Cada persona la vio <strong>{{ c.duration.freq_now }} veces</strong>. Lleva <strong>{{ c.duration.age_days or '?' }} días</strong> corriendo.</div>
                 </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:{% if c.duration.status == 'burnt' %}var(--rose){% elif c.duration.status == 'fatigued' %}var(--accent){% else %}var(--accent-2){% endif %};font-size:14px">{{ c.duration.days_remaining }}d</span>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;background:{% if c.duration.status == 'burnt' %}var(--rose){% elif c.duration.status == 'fatigued' %}var(--accent){% else %}var(--accent-2){% endif %};color:#000;padding:2px 6px;border-radius:4px;font-weight:700">{{ c.duration.status|upper }}</span>
+                <div style="text-align:right">
+                  <div style="font-weight:800;font-size:18px;color:{% if c.duration.status == 'burnt' %}var(--rose){% elif c.duration.status == 'fatigued' %}var(--accent){% else %}var(--accent-2){% endif %}">{{ c.duration.days_remaining }} días</div>
+                  <div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:{% if c.duration.status == 'burnt' %}var(--rose){% elif c.duration.status == 'fatigued' %}var(--accent){% else %}var(--accent-2){% endif %};margin-top:2px">{% if c.duration.status == 'burnt' %}🔥 burnt{% elif c.duration.status == 'fatigued' %}🥵 fatigued{% else %}⚠️ warming{% endif %}</div>
+                </div>
               </div>
               {% endif %}
               {% endfor %}
@@ -1057,18 +1108,21 @@
           </div>
 
           <div style="background:rgba(52,211,153,.04);border:1px solid rgba(52,211,153,.20);border-radius:14px;padding:18px">
-            <h3 style="font-size:14px;font-weight:700;color:var(--mint);margin-bottom:14px">✅ Saludables · margen amplio</h3>
+            <h3 style="font-size:14px;font-weight:700;color:var(--mint);margin-bottom:6px">✅ Dejá correr</h3>
+            <p style="font-size:11px;color:var(--text-3);margin-bottom:14px;line-height:1.55">Activas que están <strong>fresh o healthy</strong>. Mucho margen, no tocar.</p>
             {% if safe_camps %}
             <div style="display:flex;flex-direction:column;gap:6px">
               {% for c in safe_camps|sort(attribute='duration.days_remaining', reverse=True)|list %}
               {% if loop.index <= 6 %}
-              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+              <div style="padding:10px;border-bottom:1px solid var(--border);font-size:12px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center">
                 <div style="overflow:hidden">
-                  <div style="color:var(--text-1);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name|truncate_smart(42) }}</div>
-                  <div style="color:var(--text-3);font-size:11px;margin-top:2px">freq {{ c.duration.freq_now }} · edad {{ c.duration.age_days or '?' }}d{% if c.duration.comparable_count %} · {{ c.duration.comparable_count }} sim{% endif %}</div>
+                  <div style="color:var(--text-1);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px">{{ c.name|truncate_smart(40) }}</div>
+                  <div style="color:var(--text-3);font-size:11px;line-height:1.45">Cada persona la vio <strong>{{ c.duration.freq_now }} veces</strong>. Lleva <strong>{{ c.duration.age_days or '?' }} días</strong> corriendo.</div>
                 </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--mint);font-size:14px">{{ c.duration.days_remaining }}d</span>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--mint);color:#000;padding:2px 6px;border-radius:4px;font-weight:700">{{ c.duration.status|upper }}</span>
+                <div style="text-align:right">
+                  <div style="font-weight:800;font-size:18px;color:var(--mint)">{{ c.duration.days_remaining }} días</div>
+                  <div style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-top:2px">{% if c.duration.status == 'fresh' %}🌱 fresh{% else %}✅ healthy{% endif %}</div>
+                </div>
               </div>
               {% endif %}
               {% endfor %}
@@ -1079,40 +1133,70 @@
           </div>
         </div>
 
-        <!-- Explicación cómo funciona -->
-        <details style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:14px 18px">
-          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text-2);user-select:none">📖 Cómo funciona el modelo · features + pesos</summary>
-          <div style="margin-top:14px;font-size:12px;color:var(--text-2);line-height:1.65">
-            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Inputs (qué mira):</strong></p>
-            <ul style="padding-left:20px;margin-bottom:14px">
-              <li><strong style="color:var(--accent)">Frequency actual</strong> + tasa de crecimiento por día (Nivel 2)</li>
-              <li><strong style="color:var(--accent)">Edad de la campaña</strong> (start_time → hoy)</li>
-              <li><strong style="color:var(--accent)">CPA actual vs promedio cuenta</strong> — si está 1.5x sobre, resta 3 días</li>
-              <li><strong style="color:var(--accent)">Similitud con campañas pasadas</strong> de tu cuenta (Nivel 3, peso mayor)</li>
-            </ul>
+        <!-- Cómo se calcula la predicción (paso a paso) -->
+        <details style="background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:14px">
+          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1);user-select:none">📖 Cómo se calcula la predicción de cada campaña (paso a paso)</summary>
+          <div style="margin-top:14px;font-size:13px;color:var(--text-2);line-height:1.7">
 
-            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Cómo encuentra similares (top-8 matching):</strong></p>
-            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px">
-              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">40%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Mismo objective</div></div>
-              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">20%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Tokens del nombre</div></div>
-              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">15%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Bid strategy</div></div>
-              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">15%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Daily budget</div></div>
-              <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">10%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">Buying type</div></div>
+            <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px">
+              <div style="background:var(--accent);color:#000;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">1</div>
+              <div>
+                <strong style="color:var(--text-1)">Buscamos campañas parecidas a la actual</strong>
+                <p style="margin-top:4px;color:var(--text-3)">De las {{ model_stats.dataset_size }} pasadas, encontramos las 8 más parecidas mirando 5 cosas:</p>
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px">
+                  <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">40%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px;line-height:1.3">Mismo objetivo (ventas, awareness, etc)</div></div>
+                  <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">20%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px;line-height:1.3">Palabras del nombre similares</div></div>
+                  <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">15%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px;line-height:1.3">Estrategia de puja igual</div></div>
+                  <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">15%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px;line-height:1.3">Presupuesto diario parecido</div></div>
+                  <div style="background:var(--surface-2);padding:10px;border-radius:8px;text-align:center"><div style="font-size:18px;font-weight:800;color:var(--blue)">10%</div><div style="font-size:10px;color:var(--text-3);margin-top:2px;line-height:1.3">Tipo de compra</div></div>
+                </div>
+              </div>
             </div>
 
-            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Fórmula:</strong></p>
-            <pre style="background:var(--surface-2);padding:12px;border-radius:8px;font-size:11px;color:var(--mint);overflow-x:auto;margin-bottom:14px">predicción_v2 = median(días de top-8 similares) − edad_actual
+            <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px">
+              <div style="background:var(--accent);color:#000;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">2</div>
+              <div>
+                <strong style="color:var(--text-1)">Vemos cuánto duraron esas 8 parecidas</strong>
+                <p style="margin-top:4px;color:var(--text-3)">Tomamos la mediana de los días que vivieron antes de pausarse. Por ejemplo: si las 8 similares duraron 6, 7, 8, 10, 12, 13, 15, 18 días → mediana = 11 días.</p>
+              </div>
+            </div>
 
-confidence = 40 + (matches × 7)   # 0 matches → 35%, 8 matches → 95%
+            <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px">
+              <div style="background:var(--accent);color:#000;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">3</div>
+              <div>
+                <strong style="color:var(--text-1)">Le restamos los días que ya lleva activa</strong>
+                <p style="margin-top:4px;color:var(--text-3)">Si la campaña actual ya lleva 4 días corriendo, restamos: 11 − 4 = <strong style="color:var(--mint)">7 días estimados restantes</strong>.</p>
+              </div>
+            </div>
 
-si CPA &gt; 1.5x avg cuenta → predicción −= 3 días
-si freq &gt; 5.0 → predicción = 0 (burnt)</pre>
+            <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px">
+              <div style="background:var(--accent);color:#000;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">4</div>
+              <div>
+                <strong style="color:var(--text-1)">Ajustamos por señales del momento</strong>
+                <p style="margin-top:4px;color:var(--text-3)">Si el CPA de la campaña ya está 1.5x más alto que tu promedio de la cuenta, restamos 3 días extra. Si la frequency llegó a 5, decretamos 0 días (burnt).</p>
+              </div>
+            </div>
 
-            <p style="margin-bottom:12px"><strong style="color:var(--text-1)">Próximos pasos (Nivel 4):</strong></p>
-            <ul style="padding-left:20px;color:var(--text-3)">
-              <li>Random Forest sobre 30+ días de history archivado (ya estamos acumulando desde 2026-05-12)</li>
-              <li>Survival analysis (Kaplan-Meier) sobre todas las campañas paused</li>
-              <li>Auto-pause cuando confidence &gt; 90% y days_remaining = 0</li>
+            <div style="display:flex;gap:14px;align-items:flex-start">
+              <div style="background:var(--mint);color:#000;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">5</div>
+              <div>
+                <strong style="color:var(--text-1)">Confianza del número</strong>
+                <p style="margin-top:4px;color:var(--text-3)">Si encontramos 8 campañas parecidas → confianza 95%. Si solo 3 → confianza 60%. Si ninguna → 35% (estamos adivinando con heurística). Por eso ves el % al lado de cada predicción.</p>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Limitaciones honestas -->
+        <details style="background:rgba(255,184,0,.04);border:1px solid rgba(255,184,0,.20);border-radius:14px;padding:14px 18px">
+          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--accent-2);user-select:none">⚠ Qué este modelo NO hace (limitaciones)</summary>
+          <div style="margin-top:14px;font-size:12px;color:var(--text-2);line-height:1.65">
+            <ul style="padding-left:20px;margin-bottom:14px">
+              <li style="margin-bottom:8px"><strong style="color:var(--text-1)">No predice rentabilidad.</strong> Una campaña fresh puede ser no rentable y una fatigued puede seguir dando ganancia. Es independiente.</li>
+              <li style="margin-bottom:8px"><strong style="color:var(--text-1)">No mira creatives.</strong> Si cambiás el ad creative, la audiencia se "refresca" y el modelo no lo sabe hasta que vea los datos de los próximos días.</li>
+              <li style="margin-bottom:8px"><strong style="color:var(--text-1)">Asume crecimiento lineal de frequency.</strong> En realidad puede crecer en saltos (después de fines de semana, eventos).</li>
+              <li style="margin-bottom:8px"><strong style="color:var(--text-1)">Las campañas similares pueden haberse pausado por decisión humana</strong>, no fatiga real. Filtramos pero no 100%.</li>
+              <li><strong style="color:var(--text-1)">No usa ML "real" todavía.</strong> Es un modelo basado en comparables (median). Random Forest + Survival Analysis quedan pendientes para cuando acumulemos 30+ días de history (estamos arrancando hoy).</li>
             </ul>
           </div>
         </details>
@@ -1153,7 +1237,7 @@ si freq &gt; 5.0 → predicción = 0 (burnt)</pre>
                 <td class="right">{% if c.cpa %}<span style="{% if c.cpa < summary.cpa * 0.7 %}color:var(--mint);font-weight:700{% elif c.cpa > summary.cpa * 1.3 %}color:var(--rose){% endif %}">{{ c.cpa|fmt }}</span>{% else %}<span style="color:var(--rose)">∞</span>{% endif %}</td>
                 <td class="right" style="{% if c.ctr > summary.ctr * 1.5 %}color:var(--mint){% elif c.ctr < summary.ctr * 0.6 %}color:var(--rose){% endif %}">{{ c.ctr|round(2) }}%</td>
                 <td class="right" style="{% if c.frequency > 3 %}color:var(--accent-2){% elif c.frequency < 2 %}color:var(--mint){% endif %}">{{ c.frequency|round(2) }}</td>
-                <td class="right" data-tip="{{ c.duration.reason }} · freq {{ c.duration.freq_now }} · +{{ c.duration.freq_per_day }}/día · edad {{ c.duration.age_days or '?' }}d{% if c.duration.comparable_count %} · {{ c.duration.comparable_count }} similares (median {{ c.duration.comparable_median_days }}d){% endif %} · conf {{ c.duration.confidence }}%">
+                <td class="right" data-tip="{% if c.duration.comparable_count %}Estimación: ~{{ c.duration.days_remaining }} días más antes de fatigar. Basada en {{ c.duration.comparable_count }} campañas tuyas parecidas (duraron en promedio {{ c.duration.comparable_median_days }} días). Cada persona ya la vio {{ c.duration.freq_now }} veces. Lleva {{ c.duration.age_days or '?' }} días corriendo. Confianza: {{ c.duration.confidence }}%.{% else %}{{ c.duration.reason }} · freq {{ c.duration.freq_now }} · edad {{ c.duration.age_days or '?' }}d · confianza {{ c.duration.confidence }}%{% endif %}">
                   {% if c.duration.status == 'paused' %}
                     <span style="color:var(--text-4);font-size:11px">⏸ paused</span>
                   {% elif c.duration.status == 'fresh' %}
