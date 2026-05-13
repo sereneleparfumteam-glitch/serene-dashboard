@@ -1667,14 +1667,35 @@
       return String(s ?? '').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
 
-    // ── Refresh button → triggers GitHub workflow_dispatch ──
+    // ── Refresh button → POST /api/refresh (Vercel function dispara el workflow) ──
     const btnRegen = document.getElementById('btn-regen');
     if (btnRegen) {
-      btnRegen.addEventListener('click', () => {
-        // Open the GitHub Actions page directly — user clicks "Run workflow"
-        // (We can't trigger workflow_dispatch from frontend without a PAT exposed)
-        window.open('https://github.com/sereneleparfumteam-glitch/serene-dashboard/actions/workflows/daily.yml', '_blank', 'noopener');
-        toast('Abriendo GitHub Actions — click "Run workflow"', 'success', 3500);
+      const originalHTML = btnRegen.innerHTML;
+      btnRegen.addEventListener('click', async () => {
+        if (btnRegen.disabled) return;
+        btnRegen.disabled = true;
+        btnRegen.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite">⟳</span> Regenerando…';
+        try {
+          const r = await fetch('/api/refresh', { method: 'POST' });
+          const data = await r.json().catch(() => ({}));
+          if (r.ok && data.ok) {
+            toast(data.message || 'Workflow disparado · vuelve en ~2 min', 'success', 5000);
+            btnRegen.innerHTML = '✓ Disparado · ~2 min';
+            setTimeout(() => {
+              btnRegen.innerHTML = originalHTML;
+              btnRegen.disabled = false;
+            }, 60000);
+          } else {
+            const msg = data.error || ('Error ' + r.status);
+            toast('No se pudo disparar: ' + msg, 'error', 6000);
+            btnRegen.innerHTML = originalHTML;
+            btnRegen.disabled = false;
+          }
+        } catch (err) {
+          toast('Error de red: ' + err.message, 'error', 5000);
+          btnRegen.innerHTML = originalHTML;
+          btnRegen.disabled = false;
+        }
       });
     }
 
