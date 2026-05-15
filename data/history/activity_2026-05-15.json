@@ -1,0 +1,1498 @@
+{
+  "fetched_at": "2026-05-15T17:17:49.691907Z",
+  "since": "2026-05-08",
+  "until": "2026-05-15",
+  "total": 64,
+  "total_human": 31,
+  "top_actors": [
+    {
+      "name": "Lidis Gallardo",
+      "count": 16
+    },
+    {
+      "name": "Gabriela Rodr\u00edguez",
+      "count": 15
+    }
+  ],
+  "events": [
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T23:27:36+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "ad2 kit tumba tanguita_Group_1",
+      "object_id": "120243994955360243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120241085830050243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T22:59:16+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1_DA",
+      "object_id": "120244080823150243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T22:15:19+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN_Group_1",
+      "object_id": "120244080678190243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T22:12:18+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1",
+      "object_id": "120244080822680243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:56:41+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN_Group_1_DA",
+      "object_id": "120244080677890243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:54:12+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1_DA",
+      "object_id": "120244080692290243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080475810243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:52:43+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1",
+      "object_id": "120244080691840243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080475810243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:36:43+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia",
+      "object_id": "120244080513490243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:35:06+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia",
+      "object_id": "120244080501290243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080475810243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:29:22+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN",
+      "object_id": "120244080513400243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:03:38+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "IMGN",
+      "object_id": "120244080475820243",
+      "change_summary": "Procesamiento pendiente \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Inactivo",
+        "campaign_id": 120244080475810243,
+        "run_status": {
+          "old_value": 17,
+          "new_value": 8
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:03:21+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "update_ad_run_status_to_be_set_after_review",
+      "event_label": "Estado del anuncio actualizado cuando se completa su revisi\u00f3n",
+      "object_name": "IMGN",
+      "object_id": "120244080475820243",
+      "change_summary": "Activo \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Inactivo",
+        "campaign_id": 120244080475810243,
+        "type": "run_status_to_set_after_review"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T21:03:21+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "IMGN",
+      "object_id": "120244080475820243",
+      "change_summary": "Activo \u2192 Procesamiento pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Procesamiento pendiente",
+        "campaign_id": 120244080475810243,
+        "run_status": {
+          "old_value": 1,
+          "new_value": 17
+        },
+        "rule_info": {
+          "rule_id": "1636901564098535",
+          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_status": "ENABLED",
+          "evaluation_spec_id": "120243526794070243",
+          "execution_spec_id": "1596923831392516",
+          "rule_name": "ANUNCIOS > 25K  COMPRAS < 1"
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:54:02+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF KIT FAV NUEVO",
+      "object_id": "120243628415440243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 70000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 250000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:53:52+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "IMGN MARIANA A CTK S-Perfumes. 09/04 13/04",
+      "object_id": "120242398330220243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 20000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 25000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:37:05+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_campaign_run_status",
+      "event_label": "Estado de la campa\u00f1a actualizado",
+      "object_name": "Carritos  abandonados 12/05",
+      "object_id": "120244015308510243",
+      "change_summary": "Procesamiento pendiente \u2192 Activa",
+      "delta_pct": null,
+      "raw_extra": {
+        "run_status": {
+          "old_value": 17,
+          "new_value": 1
+        },
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Activa",
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:36:57+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_campaign_budget",
+      "event_label": "Presupuesto de la campa\u00f1a actualizado",
+      "object_name": "Carritos  abandonados 12/05",
+      "object_id": "120244015308510243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 30000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 50000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:36:57+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_campaign_run_status",
+      "event_label": "Estado de la campa\u00f1a actualizado",
+      "object_name": "Carritos  abandonados 12/05",
+      "object_id": "120244015308510243",
+      "change_summary": "Activa \u2192 Procesamiento pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "run_status": {
+          "old_value": 1,
+          "new_value": 17
+        },
+        "old_value": "Activa",
+        "new_value": "Procesamiento pendiente",
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:36:25+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF KIT FAV NUEVO",
+      "object_id": "120243628415440243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 50000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 70000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:36:05+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "ad5 kit tumba tanguita",
+      "object_id": "120241085830040243",
+      "change_summary": "Procesamiento pendiente \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Inactivo",
+        "campaign_id": 120241085830050243,
+        "run_status": {
+          "old_value": 17,
+          "new_value": 8
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:35:59+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_run_status_to_be_set_after_review",
+      "event_label": "Estado del anuncio actualizado cuando se completa su revisi\u00f3n",
+      "object_name": "ad5 kit tumba tanguita",
+      "object_id": "120241085830040243",
+      "change_summary": "Activo \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Inactivo",
+        "campaign_id": 120241085830050243,
+        "type": "run_status_to_set_after_review"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:35:59+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "ad5 kit tumba tanguita",
+      "object_id": "120241085830040243",
+      "change_summary": "Activo \u2192 Procesamiento pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Procesamiento pendiente",
+        "campaign_id": 120241085830050243,
+        "run_status": {
+          "old_value": 1,
+          "new_value": 17
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:35:52+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "ad1 - Copia",
+      "object_id": "120242398359900243",
+      "change_summary": "Procesamiento pendiente \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Inactivo",
+        "campaign_id": 120242398330220243,
+        "run_status": {
+          "old_value": 17,
+          "new_value": 8
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:35:42+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_run_status_to_be_set_after_review",
+      "event_label": "Estado del anuncio actualizado cuando se completa su revisi\u00f3n",
+      "object_name": "ad1 - Copia",
+      "object_id": "120242398359900243",
+      "change_summary": "Activo \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Inactivo",
+        "campaign_id": 120242398330220243,
+        "type": "run_status_to_set_after_review"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:35:42+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "ad1 - Copia",
+      "object_id": "120242398359900243",
+      "change_summary": "Activo \u2192 Procesamiento pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Procesamiento pendiente",
+        "campaign_id": 120242398330220243,
+        "run_status": {
+          "old_value": 1,
+          "new_value": 17
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T20:35:35+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "IMGN MARIANA A CTK S-Perfumes. 09/04 13/04",
+      "object_id": "120242398330220243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 250000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 20000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T18:56:11+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "PAGA 2 Y LLEVA 3 1 13/05/2026 IMGN",
+      "object_id": "120244080475810243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 75000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 150000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T18:56:06+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "IMGN MARIANA A CTK S-Perfumes. 09/04 13/04",
+      "object_id": "120242398330220243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 150000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 250000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T16:42:53+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "PAGA 2 Y LLEVA 3 1 13/05/2026 IMGN",
+      "object_id": "120244080475810243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 35000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 75000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T16:42:37+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_set_run_status",
+      "event_label": "Estado del conjunto de anuncios actualizado",
+      "object_name": "IMGN MARIANA A CTK S-Perfumes. 09/04 13/04",
+      "object_id": "120242398330220243",
+      "change_summary": "Inactivo \u2192 Activo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Inactivo",
+        "new_value": "Activo",
+        "run_status": {
+          "old_value": 7,
+          "new_value": 1
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T16:42:05+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF LOTE 6 MARZO 1-5 S-parfum. 20/03 CAMBIAR COPY",
+      "object_id": "120241085830050243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 149950,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 29950,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:20:20+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF LOTE 6 MARZO 1-5 S-parfum. 20/03 CAMBIAR COPY",
+      "object_id": "120241085830050243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 109950,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 149950,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:20:06+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF KIT FAV5 + REDITUS 07/04",
+      "object_id": "120242114451130243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 19915,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 99915,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:54+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFFV VIEJO2 KIT FAV NUEVO",
+      "object_id": "120243292818950243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 15000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 150000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:48+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF KIT FAV 21/03",
+      "object_id": "120241154825740243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 50500,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 150500,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:40+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "V WIN CREMA PAGE REDITUS BESTIA NEGRA 11/05/2026",
+      "object_id": "120243925380680243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 39995,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 19995,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:31+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "LOTE 7 MARZO KIT BS 1-5  21/03 COPY CAMBIAR",
+      "object_id": "120241129021860243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 100050,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 20050,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:13+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_campaign_run_status",
+      "event_label": "Estado de la campa\u00f1a actualizado",
+      "object_name": "TEST ESCALA CBO WIN 02/05/2026 TODO KIT FAV",
+      "object_id": "120243447911850243",
+      "change_summary": "Procesamiento pendiente \u2192 Activa",
+      "delta_pct": null,
+      "raw_extra": {
+        "run_status": {
+          "old_value": 17,
+          "new_value": 1
+        },
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Activa",
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:06+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_campaign_budget",
+      "event_label": "Presupuesto de la campa\u00f1a actualizado",
+      "object_name": "TEST ESCALA CBO WIN 02/05/2026 TODO KIT FAV",
+      "object_id": "120243447911850243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 99000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 199000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T14:19:06+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_campaign_run_status",
+      "event_label": "Estado de la campa\u00f1a actualizado",
+      "object_name": "TEST ESCALA CBO WIN 02/05/2026 TODO KIT FAV",
+      "object_id": "120243447911850243",
+      "change_summary": "Activa \u2192 Procesamiento pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "run_status": {
+          "old_value": 1,
+          "new_value": 17
+        },
+        "old_value": "Activa",
+        "new_value": "Procesamiento pendiente",
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:34:24+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1",
+      "object_id": "120244080672310243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:32:25+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN_Group_1_DA",
+      "object_id": "120244080671410243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080475810243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:30:25+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN_Group_1",
+      "object_id": "120244080671020243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080475810243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:28:00+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1_DA",
+      "object_id": "120244080672930243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:22:52+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1",
+      "object_id": "120244080639640243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:22:36+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia",
+      "object_id": "120244080513440243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:21:05+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN",
+      "object_id": "120244080475820243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080475810243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T13:13:36+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia",
+      "object_id": "120244080513500243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T12:00:29+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1_DA",
+      "object_id": "120244080652650243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T11:59:35+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "ad_account_billing_charge",
+      "event_label": "Cuenta facturada",
+      "object_name": "PRUEBA GABRIELA",
+      "object_id": "1020250386264513",
+      "change_summary": "2520",
+      "delta_pct": null,
+      "raw_extra": {
+        "currency": "COP",
+        "new_value": 2520,
+        "transaction_id": "26978787255143041-27132775073077596",
+        "action": 67,
+        "type": "payment_amount"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T11:35:15+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN - Copia_Group_1",
+      "object_id": "120244080652210243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513430243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T11:02:34+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN_Group_1_DA",
+      "object_id": "120244080645810243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T10:29:44+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "IMGN",
+      "object_id": "120244080513480243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244080513470243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T08:01:14+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "ad2 kit tumba tanguita_Group_1",
+      "object_id": "120243994956170243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120241085830050243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T06:02:44+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "ad2 - Copia",
+      "object_id": "120243999078260243",
+      "change_summary": "Procesamiento pendiente \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Inactivo",
+        "campaign_id": 120241129021860243,
+        "run_status": {
+          "old_value": 17,
+          "new_value": 8
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T06:02:30+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "update_ad_run_status_to_be_set_after_review",
+      "event_label": "Estado del anuncio actualizado cuando se completa su revisi\u00f3n",
+      "object_name": "ad2 - Copia",
+      "object_id": "120243999078260243",
+      "change_summary": "Activo \u2192 Inactivo",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Inactivo",
+        "campaign_id": 120241129021860243,
+        "type": "run_status_to_set_after_review"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-14T06:02:30+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "ad2 - Copia",
+      "object_id": "120243999078260243",
+      "change_summary": "Activo \u2192 Procesamiento pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Activo",
+        "new_value": "Procesamiento pendiente",
+        "campaign_id": 120241129021860243,
+        "run_status": {
+          "old_value": 1,
+          "new_value": 17
+        },
+        "rule_info": {
+          "rule_id": "1636901564098535",
+          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_status": "ENABLED",
+          "evaluation_spec_id": "120243526794070243",
+          "execution_spec_id": "1596923831392516",
+          "rule_name": "ANUNCIOS > 25K  COMPRAS < 1"
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T23:34:03+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF KIT FAV NUEVO",
+      "object_id": "120243628415440243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 250000,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 350000,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T22:45:01+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "update_ad_run_status",
+      "event_label": "Estado del anuncio actualizado",
+      "object_name": "IMGN - Copia",
+      "object_id": "120244080501300243",
+      "change_summary": "Procesamiento pendiente \u2192 Revisi\u00f3n pendiente",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": "Procesamiento pendiente",
+        "new_value": "Revisi\u00f3n pendiente",
+        "campaign_id": 120244080475810243,
+        "run_status": {
+          "old_value": 17,
+          "new_value": 9
+        },
+        "type": "run_status"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T22:41:33+0000",
+      "actor": "Lidis Gallardo",
+      "is_system": false,
+      "event_type": "add_images",
+      "event_label": "Imagen agregada a la biblioteca",
+      "object_name": "PRUEBA GABRIELA",
+      "object_id": "1020250386264513",
+      "change_summary": "",
+      "delta_pct": null,
+      "raw_extra": {
+        "image_url": "https://scontent-lhr8-1.xx.fbcdn.net/v/t45.1600-4/700274508_122166055484821055_8669556856786572026_n.png?stp=dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=aCsRwI8FW6wQ7kNvwE_LRAF&_nc_oc=Adrq7xSVgWdSJbdE-hc1B2fLDcL4dVzJFzYuRQQ98hXoNkgBMnWrmDBSI2rtYyR8QSg&_nc_zt=1&_nc_ht=scontent-lhr8-1.xx&edm=AHV8P_YEAAAA&_nc_gid=I__mv8yJutZ9O2bbUoieBA&_nc_tpa=Q5bMBQG_1wh_SNwT2NCq3QaVTNymbt1_4tGvdb03R3-JSAUgfV_nxWWVN2TuBpVatUCiNBsfiC4I3N1zTg&oh=00_Af48Jx2KbmP-FSQQqUMjFRKI-Fip9QOhZEopg62V7P73eQ&oe=6A0D27CA"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T19:14:54+0000",
+      "actor": "Gabriela Rodr\u00edguez",
+      "is_system": false,
+      "event_type": "update_ad_set_budget",
+      "event_label": "Presupuesto del conjunto de anuncios actualizado",
+      "object_name": "JEFF KIT FAV 21/03",
+      "object_id": "120241154825740243",
+      "change_summary": "$0 \u2192 $0",
+      "delta_pct": null,
+      "raw_extra": {
+        "old_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "old_value": 120500,
+          "additional_type": "status_string",
+          "additional_value": ""
+        },
+        "new_value": {
+          "type": "payment_amount",
+          "currency": "COP",
+          "new_value": 60500,
+          "additional_type": "status_string",
+          "additional_value": "por d\u00eda"
+        },
+        "type": "composite_data"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T16:55:08+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "ad5 kit tumba tanguita_Group_1",
+      "object_id": "120243995003300243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120241085830050243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T02:15:09+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "ad2_Group_1_Image",
+      "object_id": "120244014815150243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244014149240243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    },
+    {
+      "platform": "meta",
+      "timestamp": "2026-05-13T00:53:05+0000",
+      "actor": "Meta",
+      "is_system": true,
+      "event_type": "first_delivery_event",
+      "event_label": "Anuncio entregado",
+      "object_name": "Nuevo anuncio de Ventas",
+      "object_id": "120244015308540243",
+      "change_summary": "Entrega iniciada",
+      "delta_pct": null,
+      "raw_extra": {
+        "campaign_id": 120244015308590243,
+        "old_value": null,
+        "new_value": "Entrega iniciada",
+        "type": "delivery_event"
+      },
+      "flag": null
+    }
+  ]
+}
