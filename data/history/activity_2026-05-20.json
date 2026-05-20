@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-05-20T02:24:51.030010Z",
+  "fetched_at": "2026-05-20T19:56:34.905496Z",
   "since": "2026-05-13",
   "until": "2026-05-20",
   "total": 500,
@@ -1403,7 +1403,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -1812,7 +1812,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -2049,7 +2049,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -2256,7 +2256,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -2329,7 +2329,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -2631,7 +2631,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -2816,7 +2816,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -2979,7 +2979,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -3174,7 +3174,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120244231822030243",
           "execution_spec_id": "1297445539035483",
@@ -6119,7 +6119,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120243526794070243",
           "execution_spec_id": "1596923831392516",
@@ -6150,7 +6150,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120243526794070243",
           "execution_spec_id": "1596923831392516",
@@ -7154,7 +7154,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120243526794070243",
           "execution_spec_id": "1596923831392516",
@@ -7265,7 +7265,7 @@
         },
         "rule_info": {
           "rule_id": "1636901564098535",
-          "rule_latest_name": "ANUNCIOS > 25K  COMPRAS < 1",
+          "rule_latest_name": "ANUNCIOS > 20K  COMPRAS < 1",
           "rule_status": "ENABLED",
           "evaluation_spec_id": "120243526794070243",
           "execution_spec_id": "1596923831392516",
